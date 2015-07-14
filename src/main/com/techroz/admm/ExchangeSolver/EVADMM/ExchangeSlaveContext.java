@@ -1,6 +1,6 @@
 package main.com.techroz.admm.ExchangeSolver.EVADMM;
 
-public class ExchangeSlaveContext extends ExchangeBase {
+public class ExchangeSlaveContext1 extends ExchangeBase {
 	
 	private double[] xOptimal;
 	private double[] xMean; //Master xMean
@@ -8,7 +8,7 @@ public class ExchangeSlaveContext extends ExchangeBase {
 	
 	XUpdate slaveOptimizationFunction;
 	
-	public ExchangeSlaveContext(int size, XUpdate slaveFunction) {
+	public ExchangeSlaveContext1(int size, XUpdate slaveFunction) {
 		this.xOptimal = new double[size];
 		this.slaveOptimizationFunction = slaveFunction;
 	}

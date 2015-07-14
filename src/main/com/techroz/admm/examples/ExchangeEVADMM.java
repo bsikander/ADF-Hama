@@ -13,7 +13,7 @@ public class ExchangeEVADMM {
 		ADFJob job = new ADFJob();
 		job.setInputPath("/Users/raja/Documents/workspace/ADFHama/data/aggregator.txt,/Users/raja/Documents/workspace/ADFHama/data/EVs.txt");
 		job.setJobName("ADF Exchage EVADMM job");
-		job.setMaxIteration(2);
+		job.setMaxIteration(3);
 		job.setOutputPath("/Users/raja/Documents/workspace/ADFHama/output/");
 		
 		job.setMasterXUpdate(CPLEXEVMasterFunction.class);

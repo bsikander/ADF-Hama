@@ -7,9 +7,9 @@ public abstract class ExchangeBase implements UUpdate, XUpdate {
 		//No U Update is required in case of 
 	}
 	
-	@Override
-	public double[] getXUpdate(String input) {
-		return null;
-		
-	}
+//	@Override
+//	public double[] getXUpdate(String input) {
+//		return null;
+//		
+//	}
 }

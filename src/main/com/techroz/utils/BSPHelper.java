@@ -1,16 +1,15 @@
 package main.com.techroz.utils;
 
 import java.io.IOException;
-
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ShareMasterData;
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ShareSlaveData;
+import main.com.techroz.bsp.IBSP;
 import main.com.techroz.bsp.BSPExchange.BSPExchange;
-
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hama.bsp.BSPPeer;
-
 
 public class BSPHelper extends BSPExchange {
 	
@@ -18,11 +17,11 @@ public class BSPHelper extends BSPExchange {
 	 * @param object Object containing u and xMean that needs to be sent
 	 * @throws IOException
 	 */
-	public static void sendShareMasterObjectToSlaves(ShareMasterData object) throws IOException
+	public static void sendShareMasterObjectToSlaves(ShareMasterData object,BSPPeer<LongWritable, Text, IntWritable, Text, Text> peer) throws IOException
 	{	
-		for(String p : bspPeer.getAllPeerNames()) {
+		for(String p : peer.getAllPeerNames()) {
 			if(!p.equals(masterTask)) {
-				bspPeer.send(p, new Text(NetworkHelper.shareMasterObjectToJson(object)));
+				peer.send(p, new Text(NetworkHelper.shareMasterObjectToJson(object)));
 			}
 		}
 	}
@@ -45,18 +44,29 @@ public class BSPHelper extends BSPExchange {
 		return averageXReceived;
 	}
 	
-	public static ShareMasterData receiveShareMasterDataObject() throws IOException
+	public static ShareMasterData receiveShareMasterDataObject(BSPPeer<LongWritable, Text, IntWritable, Text, Text> peer) throws IOException
 	{
 		ShareMasterData masterData = new ShareMasterData();
 		Text receivedJson;
 		
-		while ((receivedJson = bspPeer.getCurrentMessage()) != null) //Receive initial array 
+		//while ((receivedJson = bspPeer.getCurrentMessage()) != null) //Receive initial array
+		while ((receivedJson = peer.getCurrentMessage()) != null) //Receive initial array
 		{	
 			masterData = NetworkHelper.jsonToShareMasterObject(receivedJson.toString());
+			System.out.println("Slave: Data found -> receiveShareMasterDataObject");
 			break;
 		}
-		
+		System.out.println("Received the data ----------");
 		return masterData;
+	}
+	
+	public static void sendFinishMessage(BSPPeer<LongWritable, Text, IntWritable, Text, Text> peer) throws IOException
+	{
+		for(String peerName: peer.getAllPeerNames()) {
+			if(!peerName.equals(IBSP.masterTask)) {
+				peer.send(peerName, new Text(NetworkHelper.shareMasterObjectToJson(new ShareMasterData(null, null))));
+			}	
+		}
 	}
 	
 	public static void sendShareSlaveObjectToMaster(ShareSlaveData object) throws IOException

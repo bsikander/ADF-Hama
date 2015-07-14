@@ -2,13 +2,13 @@ package main.com.techroz.admm.ExchangeSolver.EVADMM;
 
 import main.com.techroz.utils.Utilities;
 
-public class ExchangeMasterContext extends ExchangeBase {
+public class ExchangeMasterContext1 extends ExchangeBase {
 	private double[] xMean;
 	private double[] xOptimal;
 	private double[] u;
 	XUpdate masterOptimizationFunction;
 
-	public ExchangeMasterContext(int size, XUpdate masterFunction) {
+	public ExchangeMasterContext1(int size, XUpdate masterFunction) {
 		xMean = new double[size];
 		u = new double[size];
 		xOptimal = new double[size];

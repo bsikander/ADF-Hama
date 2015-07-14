@@ -58,4 +58,25 @@ public class Utilities {
 		
 		return mean;
 	}
+	
+	public static double[] scalerMultiply(double[] arr, double multiplier)
+	{	
+		double[] newArr = new double[arr.length];
+		for(int i=0; i < arr.length; i++)
+		{
+			newArr[i] = arr[i]*multiplier;
+		}
+		
+		return newArr;
+	}
+	
+	public static void PrintArray(double[] input)
+	{		
+		System.out.println("=====Priting Array=====");
+		for(int i =0; i < input.length; i++)
+		{		
+			System.out.print(input[i] + " ");
+		}
+		System.out.println("=====END=====");
+	}
 }

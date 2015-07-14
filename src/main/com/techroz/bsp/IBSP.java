@@ -28,7 +28,7 @@ public abstract class IBSP<K1, V1, K2, V2, M extends Writable> extends BSP<K1, V
 	      SyncException, InterruptedException {
 		LOG.info(peer.getPeerName() + " is starting up");
 		
-		this.masterTask = peer.getPeerName(0); //0 is out master
+		IBSP.masterTask = peer.getPeerName(0); //0 is out master
 	}
 
 	@Override
