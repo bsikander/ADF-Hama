@@ -2,6 +2,7 @@ package main.com.techroz.bsp.BSPExchange;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,10 +15,13 @@ import org.apache.hama.bsp.sync.SyncException;
 
 import main.com.techroz.utils.BSPHelper;
 import main.com.techroz.utils.Constants;
+import main.com.techroz.utils.Utilities;
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeContext;
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ShareMasterData;
 import main.com.techroz.admm.ExchangeSolver.EVADMM.XUpdate;
 import main.com.techroz.bsp.IBSP;
+import main.com.techroz.deleteme.Result;
+import main.com.techroz.deleteme.ResultMaster;
 
 public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Text> {
 	public static final Log LOG = LogFactory.getLog(BSPExchange.class);
@@ -30,6 +34,9 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 	protected static int ADF_ADMM_ITERATIONS_MAX;
 	protected static double RHO;
 	protected static int XOPTIMAL_SIZE;
+	
+	List<Result> resultList = new ArrayList<Result>();
+	List<ResultMaster> resultMasterList = new ArrayList<ResultMaster>();
 	
 	@Override
 	public void bsp(BSPPeer<LongWritable, Text, IntWritable, Text, Text> peer)
@@ -50,14 +57,19 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 				
 				String input = peer.readNext().getValue().toString();
 				System.out.println("Master: Sending aggregator data to optimize >> " + input);
-				context.getXUpdate(input,0); //Optimize Master Equation
+				context.getXUpdate(input,11); //Optimize Master Equation
 				
 				peer.sync();
 				
-				double[] average = BSPHelper.getAverageOfReceivedOptimalSlaveValues(); //Get average of all the data received
+				double[] average = BSPHelper.getAverageOfReceivedOptimalSlaveValues(peer); //Get average of all the data received
+				System.out.println("--------- AVERAGE AT MASTER ---------" );
+				Utilities.PrintArray(average);
+				System.out.println("--------- AVERAGE AT MASTER ---------" );
 				
-				context.calculateXMean(average, 10); //TODO: Replace this dummy 10 from here
+				context.calculateXMean(average, 11); //TODO: Replace this dummy 10 from here
 				context.calculateU();
+				
+				resultMasterList.add(new ResultMaster(peer.getPeerName(),k,0,context.getU(),context.getxMean(),context.getXOptimal(),0,average));
 				
 				peer.reopenInput(); //Read the input again for next iteration
 				
@@ -71,6 +83,19 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 			BSPHelper.sendFinishMessage(peer);
 			peer.sync();
 			peer.sync();
+			
+			System.out.println("\\\\\\\\MASTER OUTPUT\\\\\\\\");
+			int count=0;
+			String printResult = "";
+			for(ResultMaster r : resultMasterList){
+				 printResult = r.printResult(count);
+				 //peer.write(new IntWritable(1), new Text(printResult));
+				 //LOG.info(printResult);
+				 //System.out.println(printResult);
+				
+				count++;
+			}
+			System.out.println("\\\\\\\\MASTER OUTPUT - END\\\\\\\\");
 		}
 		else {
 			boolean finish = false;
@@ -97,10 +122,12 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 				int i = 0;
 			
 				while(peer.readNext(key, value) != false) {
-					System.out.println("Slave: Optimize the slave data" + i +" >>>" + value.toString());
+					//System.out.println("Slave: Optimize the slave data" + i +" >>>" + value.toString());
 					context.getXUpdate(value.toString(),i);
 					
-					BSPHelper.sendShareSlaveObjectToMaster(context.getSlaveData()); //Send x* to master
+					resultList.add(new Result(peer.getPeerName(),i,0, context.getXOld(i), masterData.getxMean(),masterData.getU(),context.getXOptimal(),0));
+					
+					BSPHelper.sendShareSlaveObjectToMaster(context.getSlaveData(),peer); //Send x* to master
 					
 					i++;
 				}
@@ -112,6 +139,13 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 			peer.sync();
 			if(finish == true) {
 				System.out.println("Slave: Finshed");
+				String printResult = "";
+				for(Result r : resultList){
+					printResult = r.printResult();
+					//System.out.println(printResult);
+					//peer.write(new IntWritable(1), new Text(printResult));
+					//LOG.info(printResult);
+				}
 			}
 			
 		}

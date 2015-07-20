@@ -14,7 +14,7 @@ public class ExchangeContext extends ExchangeBase {
 		xMean = new double[size];
 		u = new double[size];
 		xOptimal = new double[size];
-		wholeX = new double[size][10]; //a matrix with 96 by number of EV processed on this machine 
+		wholeX = new double[size][11]; //TODO: a matrix with 96 by number of EV processed on this machine 
 		
 		this.xUpdateFunction = masterFunction;
 	}

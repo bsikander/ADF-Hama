@@ -29,13 +29,13 @@ public class BSPHelper extends BSPExchange {
 	/*
 	 * 
 	 */
-	public static double[] getAverageOfReceivedOptimalSlaveValues() throws IOException
+	public static double[] getAverageOfReceivedOptimalSlaveValues(BSPPeer<LongWritable, Text, IntWritable, Text, Text> peer) throws IOException
 	{	
 		ShareSlaveData slave;
 		Text receivedJson;
 		double[] averageXReceived = Utilities.getZeroArray(XOPTIMAL_SIZE); 
 				
-		while ((receivedJson = bspPeer.getCurrentMessage()) != null) //Receive initial array 
+		while ((receivedJson = peer.getCurrentMessage()) != null) //Receive initial array 
 		{
 			slave = NetworkHelper.jsonToShareSlaveObject(receivedJson.toString());
 			averageXReceived =  Utilities.vectorAdd(averageXReceived, slave.getXOptimal()); 
@@ -69,8 +69,8 @@ public class BSPHelper extends BSPExchange {
 		}
 	}
 	
-	public static void sendShareSlaveObjectToMaster(ShareSlaveData object) throws IOException
+	public static void sendShareSlaveObjectToMaster(ShareSlaveData object,BSPPeer<LongWritable, Text, IntWritable, Text, Text> peer) throws IOException
 	{	
-		bspPeer.send(masterTask, new Text(NetworkHelper.shareSlaveObjectToJson(object)));
+		peer.send(masterTask, new Text(NetworkHelper.shareSlaveObjectToJson(object)));
 	}
 }

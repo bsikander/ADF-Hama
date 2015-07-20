@@ -93,34 +93,20 @@ public class CPLEXEVSlaveFunction implements XUpdate{
 			IloNumExpr[] BXExpLe = new IloNumExpr[B[0].length];
 			IloNumExpr[] BXExpGe = new IloNumExpr[B[0].length];
 			
-//			System.out.print("[");
 			for(int f=0; f < B[0].length; f++)
 			{
-				//NOTE: REmove this start
-//				if(f == B[0].length - 1)
-//				{
-//					System.out.print(B[h][f]);
-//				}
-//				else
-//				System.out.print(B[h][f] + ",");
-				//Note: remove this end
-				//System.out.println("Size >> h " + h + " >> f " + f);
 				BXExpLe[f] = cplex.prod(x_i[f],B[h][f]);
 				BXExpGe[f] = cplex.prod(x_i[f],B[h][f]);
 			}
-//			System.out.print("]");
-//			System.out.println();
-			
+
 			cplex.addLe(cplex.sum(BXExpLe), this.S_max[h]);
 			cplex.addGe(cplex.sum(BXExpGe), this.S_min[h]);
 		}
 		
-		//if(firstIteration)
-			//cplex.exportModel("EV.lp");
+		//cplex.exportModel("EV_" +inputIndex + ".lp");
 		
 		cplex.solve();
 		
-		//System.out.println("Slave Output value: " + cplex.getObjValue() + "  CurrentEV: " + this.currentEVNo);
 		System.out.println(cplex.getStatus());
 		
 		xOptimal = new double[x_i.length];

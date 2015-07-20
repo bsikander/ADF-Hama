@@ -1,30 +1,29 @@
 Tried aggregator 1 time.
-QP Presolve eliminated 25 rows and 45 columns.
-Reduced QP has 84 rows, 52 columns, and 2604 nonzeros.
-Reduced QP objective Q matrix has 52 nonzeros.
+QP Presolve eliminated 21 rows and 43 columns.
+Reduced QP has 88 rows, 54 columns, and 2816 nonzeros.
+Reduced QP objective Q matrix has 54 nonzeros.
 Presolve time = 0.00 sec. (0.23 ticks)
 Parallel mode: using up to 4 threads for barrier.
-Number of nonzeros in lower triangle of A*A' = 3486
+Number of nonzeros in lower triangle of A*A' = 3828
 Using Approximate Minimum Degree ordering
-Total time for automatic ordering = 0.00 sec. (0.14 ticks)
+Total time for automatic ordering = 0.00 sec. (0.16 ticks)
 Summary statistics for Cholesky factor:
   Threads                   = 4
-  Rows in Factor            = 84
-  Integer space required    = 84
-  Total non-zeros in factor = 3570
-  Total FP ops to factor    = 201110
+  Rows in Factor            = 88
+  Integer space required    = 88
+  Total non-zeros in factor = 3916
+  Total FP ops to factor    = 231044
  Itn      Primal Obj        Dual Obj  Prim Inf Upper Inf  Dual Inf          
-   0   1.2866940e+03  -1.7065682e+03  9.79e+04  3.91e+03  1.52e+02
-   1   4.9668680e+01  -4.5367436e+02  1.68e+04  6.71e+02  2.61e+01
-   2   2.8922635e+00  -1.9436653e+02  1.41e+03  5.62e+01  2.18e+00
-   3   1.5422590e+00  -9.4118386e+00  5.11e+01  2.04e+00  7.95e-02
-   4   9.3485872e-01  -3.0963604e+00  1.81e+01  7.24e-01  2.82e-02
-   5   6.6649638e-01   3.9599541e-01  6.01e-01  2.40e-02  9.39e-04
-   6   6.4786460e-01   6.3698390e-01  3.70e-03  1.48e-04  5.78e-06
-   7   6.4757317e-01   6.4741831e-01  6.48e-06  2.59e-07  1.01e-08
-   8   6.4757305e-01   6.4757148e-01  3.12e-08  1.25e-09  4.87e-11
-   9   6.4757305e-01   6.4757304e-01  1.44e-10  5.84e-12  2.28e-13
-  10   6.4757305e-01   6.4757305e-01  5.00e-12  2.62e-14  8.85e-16
-Barrier time = 0.01 sec. (1.85 ticks)
+   0   1.3473344e+03  -1.7733213e+03  1.06e+05  4.06e+03  1.59e+02
+   1   5.3060700e+01  -4.7439744e+02  1.82e+04  6.98e+02  2.73e+01
+   2   3.2015451e+00  -2.0282755e+02  1.52e+03  5.84e+01  2.29e+00
+   3   1.6957419e+00  -8.7237694e+00  4.79e+01  1.84e+00  7.19e-02
+   4   1.1438948e+00  -3.1285514e+00  1.92e+01  7.37e-01  2.88e-02
+   5   8.6013714e-01   5.9898098e-01  4.99e-01  1.92e-02  7.53e-04
+   6   8.4389486e-01   8.3443002e-01  2.85e-03  1.09e-04  4.30e-06
+   7   8.4377053e-01   8.4367550e-01  8.68e-06  3.33e-07  1.31e-08
+   8   8.4377052e-01   8.4376958e-01  4.08e-08  1.57e-09  6.15e-11
+   9   8.4377052e-01   8.4377051e-01  1.85e-10  6.91e-12  2.71e-13
+Barrier time = 0.01 sec. (1.89 ticks)
 
-Total time on 4 threads = 0.01 sec. (1.85 ticks)
+Total time on 4 threads = 0.01 sec. (1.89 ticks)

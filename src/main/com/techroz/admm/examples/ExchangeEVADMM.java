@@ -13,7 +13,7 @@ public class ExchangeEVADMM {
 		ADFJob job = new ADFJob();
 		job.setInputPath("/Users/raja/Documents/workspace/ADFHama/data/aggregator.txt,/Users/raja/Documents/workspace/ADFHama/data/EVs.txt");
 		job.setJobName("ADF Exchage EVADMM job");
-		job.setMaxIteration(3);
+		job.setMaxIteration(2);
 		job.setOutputPath("/Users/raja/Documents/workspace/ADFHama/output/");
 		
 		job.setMasterXUpdate(CPLEXEVMasterFunction.class);
@@ -24,7 +24,7 @@ public class ExchangeEVADMM {
 		job.setDataHeader("d,A,R,Smax,Smin,B"); //Slave data
 		job.setDataHeader("price,re,D,xa_min,xa_max"); //Master data
 		job.setXOptimalSize(96); //TODO: Find some alternative. Try to make it part of BSPExchange class
-		//TODO: Set IFunction f and g
+		
 		job.run();
 	}
 
