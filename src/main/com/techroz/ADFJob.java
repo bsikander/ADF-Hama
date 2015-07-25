@@ -9,16 +9,18 @@ import org.apache.hama.bsp.FileInputFormat;
 import org.apache.hama.bsp.TextInputFormat;
 import org.apache.hama.HamaConfiguration;
 
-import main.com.techroz.admm.ExchangeSolver.EVADMM.XUpdate;
-import main.com.techroz.admm.Functions.CPLEXEVMasterFunction;
-import main.com.techroz.admm.Functions.CPLEXEVSlaveFunction;
+import main.com.techroz.admm.Functions.XUpdate;
+import main.com.techroz.admm.Functions.EVADMM.CPLEXEVMasterFunction;
+import main.com.techroz.admm.Functions.EVADMM.CPLEXEVSlaveFunction;
 import main.com.techroz.utils.Constants;
+
+import com.google.common.base.Preconditions;
 
 
 public class ADFJob {
 	
 	HamaConfiguration conf;
-	BSPJob job;
+	public BSPJob job;
 	
 	public ADFJob() throws IOException {
 		conf = new HamaConfiguration();
@@ -30,13 +32,15 @@ public class ADFJob {
 	}
 	
 	public void setInputPath(String inputPath) {
-		job.set(Constants.ADF_INPUT_PATH, inputPath);
+		job.set(Constants.ADF_INPUT_PATH, inputPath); //Save input path in configurations
 		
+		//set the job input path
 		FileInputFormat.addInputPaths(job, inputPath);
 		job.setInputFormat(TextInputFormat.class);
 	}
 	
 	public void setOutputPath(String outputPath) {
+		//Set the output path in configurations and also set the output path of the job
 		job.set(Constants.ADF_OUTPUT_PATH, outputPath);
 		job.setOutputPath(new Path(outputPath));
 	}
@@ -51,51 +55,83 @@ public class ADFJob {
 		job.setJobName(jobName);
 	}
 	
-	public void setXOptimalSize(int size) {
+	public void setSolutionVectorSize(int size) {
 		job.set(Constants.ADF_XOPTIMAL_SIZE, String.valueOf(size));
 	}
 	
-	public void setDataHeader(String header) {
-		job.set(Constants.ADF_DATA_HEADER, header);
-	}
+//	public void setDataHeader(String header) {
+//		job.set(Constants.ADF_DATA_HEADER, header);
+//	}
 	
 	@SuppressWarnings("rawtypes")
-	public void setADMMSolverClass(Class<? extends BSP> cls) {
+	public void setADMMClass(Class<? extends BSP> cls) {
 		job.setBspClass(cls);
+		conf.setClass(Constants.ADF_ADMM_BSP_CLASS, cls, BSP.class);
 	}
 	
-	public void setMasterXUpdate(Class<? extends XUpdate> cls) {
-		conf.setClass(Constants.ADF_MASTER_FUNCTION, cls, XUpdate.class);
+	public void setFunction1(Class<? extends XUpdate> cls) {
+		conf.setClass(Constants.ADF_FUNCTION1, cls, XUpdate.class);
 	}
 	
-	public void setMasterModelFile(String path) {
-		job.set(Constants.ADF_MASTER_MODEL_PATH, path);
+	public void setMasterXUpdate(Class<? extends XUpdate> cls, String modelFilePath, String dataHeaders) {
+		conf.setClass(Constants.ADF_FUNCTION1, cls, XUpdate.class);
+		job.set(Constants.ADF_FUNCTION1_MODEL_PATH, modelFilePath);
+		job.set(Constants.ADF_FUNCTION1_DATA_HEADER, dataHeaders);
+
+		
+		//		conf.setClass(Constants.ADF_MASTER_FUNCTION, cls, XUpdate.class);
+//		job.set(Constants.ADF_MASTER_MODEL_PATH, modelFilePath);
+//		job.set(Constants.ADF_MASTER_DATA_HEADER, dataHeaders);
 	}
 	
-	public void setSlaveModelFile(String path) {
-		job.set(Constants.ADF_SLAVE_MODEL_PATH, path);
+	
+	public void setFunction2(Class<? extends XUpdate> cls) {
+		conf.setClass(Constants.ADF_FUNCTION2, cls, XUpdate.class);
+		//conf.setClass(Constants.ADF_SLAVE_FUNCTION, cls, XUpdate.class);
 	}
 	
-	//TODO: BAD CONVENTION -- USER SHOULD NOT KNOW ABOUT XUPDATE- CHANGE IT TO IFUNTION OR SOMETHING
-	public void setSlaveXUpdate(Class<? extends XUpdate> cls) {
-		conf.setClass(Constants.ADF_SLAVE_FUNCTION, cls, XUpdate.class);
+	public void setSlaveXUpdate(Class<? extends XUpdate> cls, String modelFileName, String dataHeaders) {
+		conf.setClass(Constants.ADF_FUNCTION2, cls, XUpdate.class);
+		job.set(Constants.ADF_FUNCTION2_MODEL_PATH, modelFileName);
+		job.set(Constants.ADF_FUNCTION2_DATA_HEADER, dataHeaders);
 	}
 	
 	public boolean run() throws ClassNotFoundException, IOException, InterruptedException {
 		//Create a Hama job here and call the waitForCompletion method
 		
-		//TODO: Use this link to develop the job class
+		Preconditions.checkArgument(
+		        conf.get(Constants.ADF_MAX_ITERATIONS) != null,
+		        "Please provide max iterations!");
+		
+		Preconditions.checkArgument(
+		        conf.get(Constants.ADF_JOB_NAME) != null,
+		        "Please provide a job name!");
+		
+		Preconditions.checkArgument(
+		        conf.get(Constants.ADF_INPUT_PATH) != null,
+		        "Please provide input path!");
+		
+		Preconditions.checkArgument(
+		        conf.get(Constants.ADF_OUTPUT_PATH) != null,
+		        "Please provide output path!");
+		
+		Preconditions.checkArgument(
+		        conf.get(Constants.ADF_XOPTIMAL_SIZE) != null,
+		        "Please provide solution vector size!");
+		
+		Preconditions.checkArgument(
+		        conf.get(Constants.ADF_FUNCTION1) != null,
+		        "Please provide function F!");
+		
+		Preconditions.checkArgument(
+		        conf.get(Constants.ADF_FUNCTION2) != null,
+		        "Please provide function G!");
+		
+		Preconditions.checkArgument(
+				conf.get(Constants.ADF_ADMM_BSP_CLASS) != null,
+		        "Please provide ADMM class!");
+		
 		//https://svn.apache.org/repos/asf/hama/trunk/graph/src/main/java/org/apache/hama/graph/GraphJob.java
 		return job.waitForCompletion(true);
 	}
-	
-	
-	
-	//1- Take mod files as input (Assume data is already in HDFS Later on we can change this)
-	//2- Take data file as input (txt format)
-	//3- Do master optimization
-	//4- Maybe submit header
-	//5- Consensus ADMM solver class
-	//6- 
-
 }

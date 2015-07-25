@@ -18,7 +18,7 @@ import main.com.techroz.utils.Constants;
 import main.com.techroz.utils.Utilities;
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeContext;
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ShareMasterData;
-import main.com.techroz.admm.ExchangeSolver.EVADMM.XUpdate;
+import main.com.techroz.admm.Functions.XUpdate;
 import main.com.techroz.bsp.IBSP;
 import main.com.techroz.deleteme.Result;
 import main.com.techroz.deleteme.ResultMaster;
@@ -57,7 +57,7 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 				
 				String input = peer.readNext().getValue().toString();
 				System.out.println("Master: Sending aggregator data to optimize >> " + input);
-				context.getXUpdate(input,11); //Optimize Master Equation
+				context.getXUpdate(input,11); //TODO:Optimize Master Equation
 				
 				peer.sync();
 				
@@ -164,8 +164,8 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 		ADF_ADMM_ITERATIONS_MAX = Integer.parseInt(peer.getConfiguration().get(Constants.ADF_MAX_ITERATIONS));
 		XOPTIMAL_SIZE = Integer.parseInt(peer.getConfiguration().get(Constants.ADF_XOPTIMAL_SIZE));
 		
-		Class<? extends XUpdate> masterFunction = (Class<? extends XUpdate>) peer.getConfiguration().getClass(Constants.ADF_MASTER_FUNCTION, XUpdate.class);
-		Class<? extends XUpdate> slaveFunction = (Class<? extends XUpdate>) peer.getConfiguration().getClass(Constants.ADF_SLAVE_FUNCTION, XUpdate.class);
+		Class<? extends XUpdate> masterFunction = (Class<? extends XUpdate>) peer.getConfiguration().getClass(Constants.ADF_FUNCTION1, XUpdate.class);
+		Class<? extends XUpdate> slaveFunction = (Class<? extends XUpdate>) peer.getConfiguration().getClass(Constants.ADF_FUNCTION2, XUpdate.class);
 		
 		try {
 			if(peer.getPeerName().equals(IBSP.masterTask)) { //If master then initialize master context otherwise slave

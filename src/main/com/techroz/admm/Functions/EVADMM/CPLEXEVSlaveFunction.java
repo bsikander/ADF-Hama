@@ -1,4 +1,4 @@
-package main.com.techroz.admm.Functions;
+package main.com.techroz.admm.Functions.EVADMM;
 
 import ilog.concert.IloException;
 import ilog.concert.IloNumExpr;
@@ -10,7 +10,7 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeContext;
-import main.com.techroz.admm.ExchangeSolver.EVADMM.XUpdate;
+import main.com.techroz.admm.Functions.XUpdate;
 import main.com.techroz.utils.Utilities;
 
 public class CPLEXEVSlaveFunction implements XUpdate{
