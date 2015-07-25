@@ -1,7 +1,10 @@
 package main.com.techroz.utils;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class Utilities {
-	
+	public static final Log LOG = LogFactory.getLog(Utilities.class);
 	/**
 	 * This method takes size as input and returns an array of zeros
 	 * @param size Size of array
@@ -72,11 +75,11 @@ public class Utilities {
 	
 	public static void PrintArray(double[] input)
 	{		
-		System.out.println("=====Priting Array=====");
+		LOG.info("=====Priting Array=====");
 		for(int i =0; i < input.length; i++)
 		{		
 			System.out.print(input[i] + " ");
 		}
-		System.out.println("=====END=====");
+		LOG.info("=====END=====");
 	}
 }

@@ -9,11 +9,16 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeContext;
 import main.com.techroz.admm.Functions.XUpdate;
+import main.com.techroz.bsp.BSPExchange.BSPExchange;
 import main.com.techroz.utils.Utilities;
 
 public class CPLEXEVSlaveFunction implements XUpdate{
+	public static final Log LOG = LogFactory.getLog(CPLEXEVSlaveFunction.class);
 
 	double[] xi_min;
 	double[] xi_max;
@@ -29,7 +34,7 @@ public class CPLEXEVSlaveFunction implements XUpdate{
 	@Override
 	public double[] getXUpdate(String input,ExchangeContext context, int inputIndex) {
 		// TODO Auto-generated method stub
-		System.out.println("CPLEXEVSlaveFunction here");
+		LOG.info("CPLEXEVSlaveFunction here");
 		parse(input);
 		
 		try {
@@ -107,7 +112,7 @@ public class CPLEXEVSlaveFunction implements XUpdate{
 		
 		cplex.solve();
 		
-		System.out.println(cplex.getStatus());
+		LOG.info(cplex.getStatus());
 		
 		xOptimal = new double[x_i.length];
 		
@@ -116,7 +121,7 @@ public class CPLEXEVSlaveFunction implements XUpdate{
 			xOptimal[u1] = cplex.getValues(x_i)[u1];
 		}
 		
-		System.out.println("SLAVE : PRINTING X_OPTIMAL VALUE");
+		LOG.info("SLAVE : PRINTING X_OPTIMAL VALUE");
 		Utilities.PrintArray(xOptimal);
 		
 		//TODO: What to do with saving the optimal value ?

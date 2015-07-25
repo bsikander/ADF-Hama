@@ -15,7 +15,7 @@ import org.apache.hama.bsp.BSPPeer;
 import org.apache.hama.bsp.sync.SyncException;
 
 public abstract class IBSP<K1, V1, K2, V2, M extends Writable> extends BSP<K1, V1, K2, V2, M> {
-	public static final Log LOG = LogFactory.getLog(BSPExchange.class);
+	public static final Log LOG = LogFactory.getLog(IBSP.class);
 	protected static String masterTask;
 	
 	

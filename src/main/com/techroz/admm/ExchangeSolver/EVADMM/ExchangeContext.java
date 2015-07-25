@@ -1,9 +1,14 @@
 package main.com.techroz.admm.ExchangeSolver.EVADMM;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import main.com.techroz.admm.Functions.XUpdate;
 import main.com.techroz.utils.Utilities;
 
 public class ExchangeContext extends ExchangeBase {
+	public static final Log LOG = LogFactory.getLog(ExchangeContext.class);
+	
 	private double[] xMean;
 	private double[] xOptimal;
 	private double[] u;

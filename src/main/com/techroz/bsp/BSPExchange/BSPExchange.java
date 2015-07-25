@@ -27,8 +27,6 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 	public static final Log LOG = LogFactory.getLog(BSPExchange.class);
 
 	protected static BSPPeer<LongWritable, Text, IntWritable, Text, Text> bspPeer;
-//	ExchangeMasterContext masterContext;
-//	ExchangeSlaveContext slaveContext;
 	ExchangeContext context;
 	
 	protected static int ADF_ADMM_ITERATIONS_MAX;
@@ -49,22 +47,22 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 			
 			while(k != ADF_ADMM_ITERATIONS_MAX && context.converged() != true)
 			{	
-				System.out.println("Master: Sending U and X Mean to slaves");
+				LOG.info("Master: Sending U and X Mean to slaves");
 				
 				//Send U and XMean to all slaves
 				BSPHelper.sendShareMasterObjectToSlaves(context.getMasterData(),peer);
 				peer.sync();  
 				
 				String input = peer.readNext().getValue().toString();
-				System.out.println("Master: Sending aggregator data to optimize >> " + input);
+				LOG.info("Master: Sending aggregator data to optimize >> " + input);
 				context.getXUpdate(input,11); //TODO:Optimize Master Equation
 				
 				peer.sync();
 				
 				double[] average = BSPHelper.getAverageOfReceivedOptimalSlaveValues(peer); //Get average of all the data received
-				System.out.println("--------- AVERAGE AT MASTER ---------" );
+				LOG.info("--------- AVERAGE AT MASTER ---------" );
 				Utilities.PrintArray(average);
-				System.out.println("--------- AVERAGE AT MASTER ---------" );
+				LOG.info("--------- AVERAGE AT MASTER ---------" );
 				
 				context.calculateXMean(average, 11); //TODO: Replace this dummy 10 from here
 				context.calculateU();
@@ -76,15 +74,15 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 				k++;
 			}
 			
-			System.out.println(peer.getPeerName() + "Master 1.8:: Sending finishing message");
+			LOG.info(peer.getPeerName() + "Master 1.8:: Sending finishing message");
 			
 			//TODO: Send Finished message
-			System.out.println("Master: Finished");
+			LOG.info("Master: Finished");
 			BSPHelper.sendFinishMessage(peer);
 			peer.sync();
 			peer.sync();
 			
-			System.out.println("\\\\\\\\MASTER OUTPUT\\\\\\\\");
+			LOG.info("\\\\\\\\MASTER OUTPUT\\\\\\\\");
 			int count=0;
 			String printResult = "";
 			for(ResultMaster r : resultMasterList){
@@ -95,16 +93,16 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 				
 				count++;
 			}
-			System.out.println("\\\\\\\\MASTER OUTPUT - END\\\\\\\\");
+			LOG.info("\\\\\\\\MASTER OUTPUT - END\\\\\\\\");
 		}
 		else {
 			boolean finish = false;
 			while(true)
 			{
-				System.out.println("Slave: Waiting for incoming data");
+				LOG.info("Slave: Waiting for incoming data");
 				peer.sync();
 				
-				System.out.println("Slave: Receving the data");
+				LOG.info("Slave: Receving the data");
 				ShareMasterData masterData = BSPHelper.receiveShareMasterDataObject(peer); //Receive xMean and u from master
 				
 				if(masterData.getU() == null) {
@@ -117,7 +115,7 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 				LongWritable key = new LongWritable();
 				Text value = new Text();
 				
-				System.out.println("Slave: Read the input data");
+				LOG.info("Slave: Read the input data");
 				//Read each input
 				int i = 0;
 			
@@ -138,7 +136,7 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 			}
 			peer.sync();
 			if(finish == true) {
-				System.out.println("Slave: Finshed");
+				LOG.info("Slave: Finshed");
 				String printResult = "";
 				for(Result r : resultList){
 					printResult = r.printResult();

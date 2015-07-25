@@ -1,17 +1,22 @@
 package main.com.techroz.utils;
 
 import java.io.IOException;
+
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ShareMasterData;
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ShareSlaveData;
 import main.com.techroz.bsp.IBSP;
 import main.com.techroz.bsp.BSPExchange.BSPExchange;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hama.bsp.BSPPeer;
 
 public class BSPHelper extends BSPExchange {
+	
+	public static final Log LOG = LogFactory.getLog(BSPHelper.class);
 	
 	/** This method sends the ShareMasterData object to all the slaves
 	 * @param object Object containing u and xMean that needs to be sent
@@ -53,10 +58,10 @@ public class BSPHelper extends BSPExchange {
 		while ((receivedJson = peer.getCurrentMessage()) != null) //Receive initial array
 		{	
 			masterData = NetworkHelper.jsonToShareMasterObject(receivedJson.toString());
-			System.out.println("Slave: Data found -> receiveShareMasterDataObject");
+			LOG.info("Slave: Data found -> receiveShareMasterDataObject");
 			break;
 		}
-		System.out.println("Received the data ----------");
+		LOG.info("Received the data ----------");
 		return masterData;
 	}
 	

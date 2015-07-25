@@ -4,12 +4,15 @@ import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.ObjectMapper;
 
 public class ShareMasterData implements Writable {
+	public static final Log LOG = LogFactory.getLog(ShareMasterData.class);
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 	
 	@JsonProperty("u")

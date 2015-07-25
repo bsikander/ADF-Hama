@@ -9,12 +9,18 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeContext;
 import main.com.techroz.admm.Functions.Update;
 import main.com.techroz.admm.Functions.XUpdate;
+import main.com.techroz.bsp.BSPExchange.BSPExchange;
 import main.com.techroz.utils.Utilities;
 
 public class CPLEXEVMasterFunction implements XUpdate {
+	public static final Log LOG = LogFactory.getLog(CPLEXEVMasterFunction.class);
+	
 	private double[] price;
 	private double[] xa_min;
 	private double[] xa_max;
@@ -24,7 +30,7 @@ public class CPLEXEVMasterFunction implements XUpdate {
 	@Override
 	public double[] getXUpdate(String input, ExchangeContext context, int inputIndex) {
 		// TODO Auto-generated method stub
-		System.out.println("CPLEXEVMaster Function here");
+		LOG.info("CPLEXEVMaster Function here");
 		
 		parse(input);
 		
@@ -72,7 +78,7 @@ public class CPLEXEVMasterFunction implements XUpdate {
 		//cplex.exportModel("TestModel_beh" + iteration +".lp");
 
 		cplex.solve();
-		System.out.println("MASTER:: Optimal Value: " + cplex.getObjValue());
+		LOG.info("MASTER:: Optimal Value: " + cplex.getObjValue());
 		
 		xOptimal = new double[x_n.length];
 		
@@ -82,7 +88,7 @@ public class CPLEXEVMasterFunction implements XUpdate {
 			xOptimal[u1] = cplex.getValues(x_n)[u1];
 		}
 		
-		System.out.println("MASTER: Optimal Value");
+		LOG.info("MASTER: Optimal Value");
 		
 		
 		Utilities.PrintArray(xOptimal);

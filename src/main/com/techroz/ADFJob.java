@@ -2,6 +2,8 @@ package main.com.techroz;
 
 import java.io.IOException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.Path;
 import org.apache.hama.bsp.BSP;
 import org.apache.hama.bsp.BSPJob;
@@ -10,14 +12,14 @@ import org.apache.hama.bsp.TextInputFormat;
 import org.apache.hama.HamaConfiguration;
 
 import main.com.techroz.admm.Functions.XUpdate;
-import main.com.techroz.admm.Functions.EVADMM.CPLEXEVMasterFunction;
-import main.com.techroz.admm.Functions.EVADMM.CPLEXEVSlaveFunction;
+import main.com.techroz.bsp.BSPExchange.BSPExchange;
 import main.com.techroz.utils.Constants;
 
 import com.google.common.base.Preconditions;
 
 
 public class ADFJob {
+	public static final Log LOG = LogFactory.getLog(ADFJob.class);
 	
 	HamaConfiguration conf;
 	public BSPJob job;
@@ -59,10 +61,6 @@ public class ADFJob {
 		job.set(Constants.ADF_XOPTIMAL_SIZE, String.valueOf(size));
 	}
 	
-//	public void setDataHeader(String header) {
-//		job.set(Constants.ADF_DATA_HEADER, header);
-//	}
-	
 	@SuppressWarnings("rawtypes")
 	public void setADMMClass(Class<? extends BSP> cls) {
 		job.setBspClass(cls);
@@ -76,18 +74,11 @@ public class ADFJob {
 	public void setFunction1(Class<? extends XUpdate> cls, String modelFilePath, String dataHeaders) {
 		conf.setClass(Constants.ADF_FUNCTION1, cls, XUpdate.class);
 		job.set(Constants.ADF_FUNCTION1_MODEL_PATH, modelFilePath);
-		job.set(Constants.ADF_FUNCTION1_DATA_HEADER, dataHeaders);
-
-		
-		//		conf.setClass(Constants.ADF_MASTER_FUNCTION, cls, XUpdate.class);
-//		job.set(Constants.ADF_MASTER_MODEL_PATH, modelFilePath);
-//		job.set(Constants.ADF_MASTER_DATA_HEADER, dataHeaders);
+		job.set(Constants.ADF_FUNCTION1_DATA_HEADER, dataHeaders);		
 	}
-	
 	
 	public void setFunction2(Class<? extends XUpdate> cls) {
 		conf.setClass(Constants.ADF_FUNCTION2, cls, XUpdate.class);
-		//conf.setClass(Constants.ADF_SLAVE_FUNCTION, cls, XUpdate.class);
 	}
 	
 	public void setFunction2(Class<? extends XUpdate> cls, String modelFileName, String dataHeaders) {
