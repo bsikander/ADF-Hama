@@ -12,7 +12,6 @@ import org.apache.hama.bsp.TextInputFormat;
 import org.apache.hama.HamaConfiguration;
 
 import main.com.techroz.admm.Functions.XUpdate;
-import main.com.techroz.bsp.BSPExchange.BSPExchange;
 import main.com.techroz.utils.Constants;
 
 import com.google.common.base.Preconditions;
