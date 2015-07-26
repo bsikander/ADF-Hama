@@ -9,14 +9,16 @@ import main.com.techroz.utils.Utilities;
 public class ExchangeContext extends ExchangeBase {
 	public static final Log LOG = LogFactory.getLog(ExchangeContext.class);
 	
-	private double[] xMean;
-	private double[] xOptimal;
-	private double[] u;
+//	private double[] xMean;
+//	private double[] xOptimal;
+//	private double[] u;
 	XUpdate xUpdateFunction;
 	private double[][] wholeX;
 	//XUpdate slaveOptimizationFunction;
 	
 	public ExchangeContext(int size, XUpdate masterFunction) {
+		super(size);
+		
 		xMean = new double[size];
 		u = new double[size];
 		xOptimal = new double[size];
@@ -73,25 +75,25 @@ public class ExchangeContext extends ExchangeBase {
 		return data;
 	}
 	
-	public void setxMean(double[] value) {
-		this.xMean = value;
-	}
-	
-	public void setU(double[] value) {
-		this.u = value;
-	}
-	
-	public double[] getxMean() {
-		return this.xMean;
-	}
-	
-	public double[] getU() {
-		return this.u;
-	}
-	
-	public double[] getXOptimal() {
-		return this.xOptimal;
-	}
+//	public void setxMean(double[] value) {
+//		this.xMean = value;
+//	}
+//	
+//	public void setU(double[] value) {
+//		this.u = value;
+//	}
+//	
+//	public double[] getxMean() {
+//		return this.xMean;
+//	}
+//	
+//	public double[] getU() {
+//		return this.u;
+//	}
+//	
+//	public double[] getXOptimal() {
+//		return this.xOptimal;
+//	}
 	
 	public double[] getXOld(int index) {
 		return this.wholeX[index];

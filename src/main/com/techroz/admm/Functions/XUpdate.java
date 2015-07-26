@@ -1,8 +1,12 @@
 package main.com.techroz.admm.Functions;
 
-import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeContext;
+import java.util.Dictionary;
 
-public interface XUpdate extends Update {
+import main.com.techroz.admm.ExchangeSolver.EVADMM.Context;
+
+public interface XUpdate {//extends Update {
 	//TODO: Instead of taking the input as string it can be improved
-	public double[] getXUpdate(String input, ExchangeContext context, int inputIndex);
+	//public double[] getXUpdate(String input, ExchangeContext context, int inputIndex, Dictionary properties);
+	//public double[] getXUpdate(String input, ExchangeContext context, int inputIndex);
+	public double[] getXUpdate(String input, Context context, int inputIndex);
 }

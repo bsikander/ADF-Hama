@@ -8,7 +8,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hama.bsp.BSPPeer;
 import org.apache.hama.bsp.sync.SyncException;
@@ -16,18 +15,20 @@ import org.apache.hama.bsp.sync.SyncException;
 import main.com.techroz.utils.BSPHelper;
 import main.com.techroz.utils.Constants;
 import main.com.techroz.utils.Utilities;
-import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeContext;
+import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeMasterContext;
+import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeSlaveContext;
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ShareMasterData;
 import main.com.techroz.admm.Functions.XUpdate;
-import main.com.techroz.bsp.IBSP;
+import main.com.techroz.bsp.BSPBase;
 import main.com.techroz.deleteme.Result;
 import main.com.techroz.deleteme.ResultMaster;
 
-public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Text> {
+public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, Text> {
 	public static final Log LOG = LogFactory.getLog(BSPExchange.class);
 
 	protected static BSPPeer<LongWritable, Text, IntWritable, Text, Text> bspPeer;
-	ExchangeContext context;
+	ExchangeMasterContext masterContext;
+	ExchangeSlaveContext slaveContext;
 	
 	protected static int ADF_ADMM_ITERATIONS_MAX;
 	protected static double RHO;
@@ -42,20 +43,20 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 		
 		int k = 0; //iteration counter
 		
-		if(peer.getPeerName().equals(IBSP.masterTask)) { //The master task 
+		if(peer.getPeerName().equals(BSPBase.masterTask)) { //The master task 
 			LOG.info("MASTER: Starting Iteration Loop");
 			
-			while(k != ADF_ADMM_ITERATIONS_MAX && context.converged() != true)
+			while(k != ADF_ADMM_ITERATIONS_MAX && masterContext.converged() != true)
 			{	
 				LOG.info("Master: Sending U and X Mean to slaves");
 				
 				//Send U and XMean to all slaves
-				BSPHelper.sendShareMasterObjectToSlaves(context.getMasterData(),peer);
+				BSPHelper.sendShareMasterObjectToSlaves(masterContext.getMasterData(),peer);
 				peer.sync();  
 				
 				String input = peer.readNext().getValue().toString();
 				LOG.info("Master: Sending aggregator data to optimize >> " + input);
-				context.getXUpdate(input,11); //TODO:Optimize Master Equation
+				masterContext.getXUpdate(input,11); //TODO:Optimize Master Equation
 				
 				peer.sync();
 				
@@ -64,10 +65,10 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 				Utilities.PrintArray(average);
 				LOG.info("--------- AVERAGE AT MASTER ---------" );
 				
-				context.calculateXMean(average, 11); //TODO: Replace this dummy 10 from here
-				context.calculateU();
+				masterContext.calculateXMean(average, 11); //TODO: Replace this dummy 10 from here
+				masterContext.calculateU();
 				
-				resultMasterList.add(new ResultMaster(peer.getPeerName(),k,0,context.getU(),context.getxMean(),context.getXOptimal(),0,average));
+				resultMasterList.add(new ResultMaster(peer.getPeerName(),k,0,masterContext.getU(),masterContext.getxMean(),masterContext.getXOptimal(),0,average));
 				
 				peer.reopenInput(); //Read the input again for next iteration
 				
@@ -110,7 +111,7 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 					break;
 				}
 				
-				context.setMasterData(masterData); //Set these in slave context
+				slaveContext.setMasterData(masterData); //Set these in slave context
 				
 				LongWritable key = new LongWritable();
 				Text value = new Text();
@@ -121,11 +122,11 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 			
 				while(peer.readNext(key, value) != false) {
 					//System.out.println("Slave: Optimize the slave data" + i +" >>>" + value.toString());
-					context.getXUpdate(value.toString(),i);
+					slaveContext.getXUpdate(value.toString(),i);
 					
-					resultList.add(new Result(peer.getPeerName(),i,0, context.getXOld(i), masterData.getxMean(),masterData.getU(),context.getXOptimal(),0));
+					resultList.add(new Result(peer.getPeerName(),i,0, slaveContext.getXOld(i), masterData.getxMean(),masterData.getU(),slaveContext.getXOptimal(),0));
 					
-					BSPHelper.sendShareSlaveObjectToMaster(context.getSlaveData(),peer); //Send x* to master
+					BSPHelper.sendShareSlaveObjectToMaster(slaveContext.getSlaveData(),peer); //Send x* to master
 					
 					i++;
 				}
@@ -156,7 +157,7 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 	      SyncException, InterruptedException {
 		LOG.info(peer.getPeerName() + " is starting up");
 		
-		IBSP.masterTask = peer.getPeerName(0); //0 is out master
+		BSPBase.masterTask = peer.getPeerName(0); //0 is out master
 		BSPExchange.bspPeer = peer;
 		
 		ADF_ADMM_ITERATIONS_MAX = Integer.parseInt(peer.getConfiguration().get(Constants.ADF_MAX_ITERATIONS));
@@ -166,11 +167,12 @@ public class BSPExchange extends IBSP<LongWritable, Text, IntWritable, Text, Tex
 		Class<? extends XUpdate> slaveFunction = (Class<? extends XUpdate>) peer.getConfiguration().getClass(Constants.ADF_FUNCTION2, XUpdate.class);
 		
 		try {
-			if(peer.getPeerName().equals(IBSP.masterTask)) { //If master then initialize master context otherwise slave
-				context = new ExchangeContext(XOPTIMAL_SIZE, masterFunction.newInstance());
+			if(peer.getPeerName().equals(BSPBase.masterTask)) { //If master then initialize master context otherwise slave
+				//context = new ExchangeContext(XOPTIMAL_SIZE, masterFunction.newInstance());
+				masterContext = new ExchangeMasterContext(XOPTIMAL_SIZE, masterFunction.newInstance());
 			}
 			else {
-				context = new ExchangeContext(XOPTIMAL_SIZE, slaveFunction.newInstance());
+				slaveContext = new ExchangeSlaveContext(XOPTIMAL_SIZE, slaveFunction.newInstance());
 			}
 			
 		} catch (InstantiationException e) {

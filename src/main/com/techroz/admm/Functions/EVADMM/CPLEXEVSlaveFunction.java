@@ -12,7 +12,8 @@ import java.io.OutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeContext;
+import main.com.techroz.admm.ExchangeSolver.EVADMM.Context;
+import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeSlaveContext;
 import main.com.techroz.admm.Functions.XUpdate;
 import main.com.techroz.bsp.BSPExchange.BSPExchange;
 import main.com.techroz.utils.Utilities;
@@ -32,7 +33,7 @@ public class CPLEXEVSlaveFunction implements XUpdate{
 	double[][] B;
 	
 	@Override
-	public double[] getXUpdate(String input,ExchangeContext context, int inputIndex) {
+	public double[] getXUpdate(String input,Context context, int inputIndex) {
 		// TODO Auto-generated method stub
 		LOG.info("CPLEXEVSlaveFunction here");
 		parse(input);
@@ -52,15 +53,16 @@ public class CPLEXEVSlaveFunction implements XUpdate{
 		return null;
 	}
 	
-	public double[] optimize(ExchangeContext context, int inputIndex) throws IloException, FileNotFoundException
+	public double[] optimize(Context context, int inputIndex) throws IloException, FileNotFoundException
 	{
 		IloCplex cplex = new IloCplex();
 		OutputStream out = new FileOutputStream("logfile_slave");
 		cplex.setOut(out);
 		
-		double[] x_old = context.getXOld(inputIndex);
-		double[] u = context.getU();
-		double[] xMean = context.getxMean();
+		//TODO: Verify this design decision
+		double[] x_old = ((ExchangeSlaveContext) context).getXOld(inputIndex);
+		double[] u = ((ExchangeSlaveContext) context).getU();
+		double[] xMean = ((ExchangeSlaveContext) context).getxMean();
 		double[] xOptimal = new double[x_old.length];
 		
 		//IloNumVar[] x_i = cplex.numVarArray(x.length, Double.MIN_VALUE, Double.MAX_VALUE);

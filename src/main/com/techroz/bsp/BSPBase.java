@@ -14,8 +14,8 @@ import org.apache.hama.bsp.BSP;
 import org.apache.hama.bsp.BSPPeer;
 import org.apache.hama.bsp.sync.SyncException;
 
-public abstract class IBSP<K1, V1, K2, V2, M extends Writable> extends BSP<K1, V1, K2, V2, M> {
-	public static final Log LOG = LogFactory.getLog(IBSP.class);
+public abstract class BSPBase<K1, V1, K2, V2, M extends Writable> extends BSP<K1, V1, K2, V2, M> {
+	public static final Log LOG = LogFactory.getLog(BSPBase.class);
 	protected static String masterTask;
 	
 	
@@ -28,7 +28,7 @@ public abstract class IBSP<K1, V1, K2, V2, M extends Writable> extends BSP<K1, V
 	      SyncException, InterruptedException {
 		LOG.info(peer.getPeerName() + " is starting up");
 		
-		IBSP.masterTask = peer.getPeerName(0); //0 is out master
+		BSPBase.masterTask = peer.getPeerName(0); //0 is out master
 	}
 
 	@Override

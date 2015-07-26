@@ -12,10 +12,9 @@ import java.io.OutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeContext;
-import main.com.techroz.admm.Functions.Update;
+import main.com.techroz.admm.ExchangeSolver.EVADMM.Context;
+import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeMasterContext;
 import main.com.techroz.admm.Functions.XUpdate;
-import main.com.techroz.bsp.BSPExchange.BSPExchange;
 import main.com.techroz.utils.Utilities;
 
 public class CPLEXEVMasterFunction implements XUpdate {
@@ -28,7 +27,8 @@ public class CPLEXEVMasterFunction implements XUpdate {
 	
 	
 	@Override
-	public double[] getXUpdate(String input, ExchangeContext context, int inputIndex) {
+	//public double[] getXUpdate(String input, ExchangeContext context, int inputIndex) {
+	public double[] getXUpdate(String input, Context context, int inputIndex) {
 		// TODO Auto-generated method stub
 		LOG.info("CPLEXEVMaster Function here");
 		
@@ -46,15 +46,16 @@ public class CPLEXEVMasterFunction implements XUpdate {
 		return null;
 	}
 
-	public double[] optimize(ExchangeContext context) throws IloException, FileNotFoundException
+	public double[] optimize(Context context) throws IloException, FileNotFoundException
 	{	
 		IloCplex cplex = new IloCplex();
 		OutputStream out = new FileOutputStream("logfile_master");
 		cplex.setOut(out);
 		
-		double[] x = context.getXOptimal();
-		double[] u = context.getU();
-		double[] xMean = context.getxMean();
+		//TODO: Verify this design decision
+		double[] x = ((ExchangeMasterContext) context).getXOptimal();
+		double[] u = ((ExchangeMasterContext) context).getU();
+		double[] xMean = ((ExchangeMasterContext) context).getxMean();
 		double[] xOptimal = new double[x.length];
 		
 		IloNumVar[] x_n = cplex.numVarArray(price.length, -60, 100000);

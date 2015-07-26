@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ShareMasterData;
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ShareSlaveData;
-import main.com.techroz.bsp.IBSP;
+import main.com.techroz.bsp.BSPBase;
 import main.com.techroz.bsp.BSPExchange.BSPExchange;
 
 import org.apache.commons.logging.Log;
@@ -70,7 +70,7 @@ public class BSPHelper extends BSPExchange {
 	public static <K1,V1,K2,V2,M extends Writable> void sendFinishMessage(BSPPeer<K1,V1,K2,V2,M> peer) throws IOException
 	{
 		for(String peerName: peer.getAllPeerNames()) {
-			if(!peerName.equals(IBSP.masterTask)) {
+			if(!peerName.equals(BSPBase.masterTask)) {
 				peer.send(peerName,(M) new Text(NetworkHelper.shareMasterObjectToJson(new ShareMasterData(null, null))));
 			}	
 		}
