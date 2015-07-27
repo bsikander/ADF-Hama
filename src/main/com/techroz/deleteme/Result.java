@@ -8,7 +8,7 @@ public class Result {
 	private double[] xMean;
 	private double[] u;
 	private double[] x_optimal;
-	private double cost_value;
+	private Double cost_value;
 	
 	public Result(String peerName,int iteration, int ev_number, double[] x_old, double[] xMean, double[] u, double[] x_optimal, double costvalue)
 	{

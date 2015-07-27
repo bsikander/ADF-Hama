@@ -23,7 +23,7 @@ public class CPLEXEVMasterFunction implements XUpdate {
 	private double[] price;
 	private double[] xa_min;
 	private double[] xa_max;
-	private double rho;
+	private Double rho;
 	
 	
 	@Override

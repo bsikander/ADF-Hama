@@ -3,6 +3,7 @@ package main.com.techroz.bsp.BSPExchange;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -104,9 +105,14 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				peer.sync();
 				
 				LOG.info("Slave: Receving the data");
-				ShareMasterData masterData = BSPHelper.receiveShareMasterDataObject(peer); //Receive xMean and u from master
+				//ShareMasterData masterData = BSPHelper.receiveShareMasterDataObject(peer); //Receive xMean and u from master
+				Map<String, double[]> masterData = BSPHelper.receiveShareMasterDataObject(peer); //Receive xMean and u from master
 				
-				if(masterData.getU() == null) {
+//				if(masterData.getU() == null) {
+//					finish = true;
+//					break;
+//				}
+				if(masterData.get("u") == null) {
 					finish = true;
 					break;
 				}
@@ -124,7 +130,7 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 					//System.out.println("Slave: Optimize the slave data" + i +" >>>" + value.toString());
 					slaveContext.getXUpdate(value.toString(),i);
 					
-					resultList.add(new Result(peer.getPeerName(),i,0, slaveContext.getXOld(i), masterData.getxMean(),masterData.getU(),slaveContext.getXOptimal(),0));
+					resultList.add(new Result(peer.getPeerName(),i,0, slaveContext.getXOld(i), masterData.get("xMean"),masterData.get("u"),slaveContext.getXOptimal(),0));
 					
 					BSPHelper.sendShareSlaveObjectToMaster(slaveContext.getSlaveData(),peer); //Send x* to master
 					

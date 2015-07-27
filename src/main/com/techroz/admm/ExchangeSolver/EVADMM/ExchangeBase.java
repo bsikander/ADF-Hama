@@ -1,5 +1,11 @@
 package main.com.techroz.admm.ExchangeSolver.EVADMM;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.lang.ArrayUtils;
+
 import main.com.techroz.admm.Functions.UUpdate;
 import main.com.techroz.admm.Functions.XUpdate;
 
@@ -35,25 +41,50 @@ public abstract class ExchangeBase implements Context {// implements UUpdate, XU
 		return this.xOptimal;
 	}
 
-	public ShareSlaveData getSlaveData() {
-		ShareSlaveData data = new ShareSlaveData();
-		data.setXOptimal(xOptimal);
+	public Map<String, double[]> getSlaveData() {
+		Map<String, double[]> data = new HashMap<String,double[]>();
+		data.put("xOptimal", xOptimal);
 		
 		return data;
 	}
 	
-	public ShareMasterData getMasterData()
-	{
-		ShareMasterData data = new ShareMasterData();
-		data.setU(u);
-		data.setxMean(xMean);
+	public Map<String, double[]> getMasterData() {
+		Map<String, double[]> data = new HashMap<String,double[]>();
+		
+		data.put("u", u);
+		data.put("xMean", xMean);
+		
 		return data;
+	} 
+	
+//	public ShareSlaveData getSlaveData1() {
+//		ShareSlaveData data = new ShareSlaveData();
+//		data.setXOptimal(xOptimal);
+//		
+//		return data;
+//	}
+	
+//	public ShareMasterData getMasterData1()
+//	{
+//		ShareMasterData data = new ShareMasterData();
+//		data.setU(u);
+//		data.setxMean(xMean);
+//		return data;
+//	}
+	
+	public void setMasterData(Map<String, double[]> data) {
+		this.xMean = data.get("xMean");
+		//ArrayUtils.toPrimitive(data.get("xMean"));
+		//ArrayUtils.toPrimitive(arg0)
+		//this.xMean =  (double[])(data.get("xMean").toArray());
+		//this.xMean = data.get("xMean").toArray(new double[data.get("xMean").length]));
+		this.u = data.get("u");
 	}
 	
-	public void setMasterData(ShareMasterData data) {
-		this.xMean = data.getxMean();
-		this.u = data.getU();
-	}
+//	public void setMasterData(ShareMasterData data) {
+//		this.xMean = data.getxMean();
+//		this.u = data.getU();
+//	}
 	
 //	@Override
 //	public double[] getUUpdate() {

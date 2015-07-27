@@ -20,6 +20,7 @@ public class ExchangeMasterContext extends ExchangeBase {//implements XUpdate, U
 //		return xOptimal;
 //	}
 	
+	//@Override
 	public double[] calculateU() {
 		u = Utilities.vectorAdd(u, xMean);
 		return u;

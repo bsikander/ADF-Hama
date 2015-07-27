@@ -1,6 +1,8 @@
 package main.com.techroz.utils;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ShareMasterData;
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ShareSlaveData;
@@ -23,12 +25,13 @@ public class BSPHelper extends BSPExchange {
 	 * @param object Object containing u and xMean that needs to be sent
 	 * @throws IOException
 	 */
-	public static <K1,V1,K2,V2,M extends Writable> void sendShareMasterObjectToSlaves(ShareMasterData object,BSPPeer<K1,V1,K2,V2, M> peer) throws IOException
+	public static <K1,V1,K2,V2,M extends Writable> void sendShareMasterObjectToSlaves(Map<String, double[]> data,BSPPeer<K1,V1,K2,V2, M> peer) throws IOException
 	//public static void sendShareMasterObjectToSlaves(ShareMasterData object,BSPPeer<LongWritable, Text, IntWritable, Text, Text> peer) throws IOException
 	{	
 		for(String p : peer.getAllPeerNames()) {
 			if(!p.equals(masterTask)) {
-				peer.send(p, (M) new Text(NetworkHelper.shareMasterObjectToJson(object)));
+				//peer.send(p, (M) new Text(NetworkHelper.shareMasterObjectToJson(object)));
+				peer.send(p, (M) new Text(NetworkHelper.convertDictionaryToJson(data)));
 			}
 		}
 	}
@@ -38,28 +41,34 @@ public class BSPHelper extends BSPExchange {
 	 */
 	public static <K1,V1,K2,V2,M extends Writable> double[] getAverageOfReceivedOptimalSlaveValues(BSPPeer<K1,V1,K2,V2,M> peer) throws IOException
 	{	
-		ShareSlaveData slave;
+		//ShareSlaveData slave;
+		Map<String, double[]> slave;
 		M receivedJson;
 		double[] averageXReceived = Utilities.getZeroArray(XOPTIMAL_SIZE); 
 				
 		while ((receivedJson = peer.getCurrentMessage()) != null) //Receive initial array 
 		{
-			slave = NetworkHelper.jsonToShareSlaveObject(receivedJson.toString());
-			averageXReceived =  Utilities.vectorAdd(averageXReceived, slave.getXOptimal()); 
+			//slave = NetworkHelper.jsonToShareSlaveObject(receivedJson.toString());
+			slave = NetworkHelper.convertJsonToDictionary(receivedJson.toString());
+			
+			//averageXReceived =  Utilities.vectorAdd(averageXReceived, slave.getXOptimal());
+			averageXReceived =  Utilities.vectorAdd(averageXReceived, slave.get("xOptimal"));
 		}
 	
 		return averageXReceived;
 	}
 	
-	public static <K1,V1,K2,V2,M extends Writable> ShareMasterData receiveShareMasterDataObject(BSPPeer<K1,V1,K2,V2,M> peer) throws IOException
+	public static <K1,V1,K2,V2,M extends Writable> Map<String, double[]> receiveShareMasterDataObject(BSPPeer<K1,V1,K2,V2,M> peer) throws IOException
 	{
-		ShareMasterData masterData = new ShareMasterData();
+		//ShareMasterData masterData = new ShareMasterData();
+		Map<String, double[]> masterData = new HashMap<String, double[]>();
 		M receivedJson;
 		
 		//while ((receivedJson = bspPeer.getCurrentMessage()) != null) //Receive initial array
 		while ((receivedJson = peer.getCurrentMessage()) != null) //Receive initial array
 		{	
-			masterData = NetworkHelper.jsonToShareMasterObject(receivedJson.toString());
+			//masterData = NetworkHelper.jsonToShareMasterObject(receivedJson.toString());
+			masterData = NetworkHelper.convertJsonToDictionary(receivedJson.toString());
 			LOG.info("Slave: Data found -> receiveShareMasterDataObject");
 			break;
 		}
@@ -69,15 +78,18 @@ public class BSPHelper extends BSPExchange {
 	
 	public static <K1,V1,K2,V2,M extends Writable> void sendFinishMessage(BSPPeer<K1,V1,K2,V2,M> peer) throws IOException
 	{
+		Map<String, double[]> data = new HashMap<String, double[]>();
 		for(String peerName: peer.getAllPeerNames()) {
 			if(!peerName.equals(BSPBase.masterTask)) {
-				peer.send(peerName,(M) new Text(NetworkHelper.shareMasterObjectToJson(new ShareMasterData(null, null))));
+				//peer.send(peerName,(M) new Text(NetworkHelper.shareMasterObjectToJson(new ShareMasterData(null, null))));
+				
+				peer.send(peerName, (M) new Text(NetworkHelper.convertDictionaryToJson(data)));
 			}	
 		}
 	}
 	
-	public static <K1,V1,K2,V2,M extends Writable> void sendShareSlaveObjectToMaster(ShareSlaveData object,BSPPeer<K1,V1,K2,V2,M> peer) throws IOException
+	public static <K1,V1,K2,V2,M extends Writable> void sendShareSlaveObjectToMaster(Map<String, double[]> data,BSPPeer<K1,V1,K2,V2,M> peer) throws IOException
 	{	
-		peer.send(masterTask, (M) new Text(NetworkHelper.shareSlaveObjectToJson(object)));
+		peer.send(masterTask, (M) new Text(NetworkHelper.convertDictionaryToJson(data)));
 	}
 }

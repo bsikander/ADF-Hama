@@ -15,7 +15,7 @@ public class Utilities {
 		double[] zeroArray = new double[size];
 		for(int i=0; i< size; i++)
 		{
-			zeroArray[i] = 0;
+			zeroArray[i] = (double) 0;
 		}
 		
 		return zeroArray;
