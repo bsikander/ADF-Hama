@@ -15,6 +15,7 @@ import org.apache.hama.bsp.sync.SyncException;
 
 import main.com.techroz.utils.BSPHelper;
 import main.com.techroz.utils.Constants;
+import main.com.techroz.utils.NetworkHelper;
 import main.com.techroz.utils.Utilities;
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeMasterContext;
 import main.com.techroz.admm.ExchangeSolver.EVADMM.ExchangeSlaveContext;
@@ -52,7 +53,8 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				LOG.info("Master: Sending U and X Mean to slaves");
 				
 				//Send U and XMean to all slaves
-				BSPHelper.sendShareMasterObjectToSlaves(masterContext.getMasterData(),peer);
+				//Get the Map and convert it to String and send to slaves
+				BSPHelper.sendShareMasterObjectToSlaves(NetworkHelper.convertDictionaryToJson(masterContext.getMasterData()),peer);
 				peer.sync();  
 				
 				String input = peer.readNext().getValue().toString();
@@ -106,7 +108,7 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				
 				LOG.info("Slave: Receving the data");
 				//ShareMasterData masterData = BSPHelper.receiveShareMasterDataObject(peer); //Receive xMean and u from master
-				Map<String, double[]> masterData = BSPHelper.receiveShareMasterDataObject(peer); //Receive xMean and u from master
+				Map<String, double[]> masterData =NetworkHelper.convertJsonToDictionary( BSPHelper.receiveShareMasterDataObject(peer)); //Receive xMean and u from master
 				
 //				if(masterData.getU() == null) {
 //					finish = true;
@@ -132,7 +134,7 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 					
 					resultList.add(new Result(peer.getPeerName(),i,0, slaveContext.getXOld(i), masterData.get("xMean"),masterData.get("u"),slaveContext.getXOptimal(),0));
 					
-					BSPHelper.sendShareSlaveObjectToMaster(slaveContext.getSlaveData(),peer); //Send x* to master
+					BSPHelper.sendShareSlaveObjectToMaster(NetworkHelper.convertDictionaryToJson(slaveContext.getSlaveData()),peer); //Send x* to master
 					
 					i++;
 				}

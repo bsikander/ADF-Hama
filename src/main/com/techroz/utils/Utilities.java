@@ -1,7 +1,13 @@
 package main.com.techroz.utils;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.map.JsonMappingException;
 
 public class Utilities {
 	public static final Log LOG = LogFactory.getLog(Utilities.class);
@@ -81,5 +87,17 @@ public class Utilities {
 			System.out.print(input[i] + " ");
 		}
 		LOG.info("=====END=====");
+	}
+	
+	public static double[] getXOptimalFromJson(String dataString) throws JsonGenerationException, JsonMappingException, IOException {
+		Map<String, double[]> data;
+		data = NetworkHelper.convertJsonToDictionary(dataString.toString());
+		
+		return data.get("xOptimal");
+	}
+	
+	public static String getFinishedMessageObject() {
+		Map<String, double[]> data = new HashMap<String, double[]>();
+		return NetworkHelper.convertDictionaryToJson(data);
 	}
 }
