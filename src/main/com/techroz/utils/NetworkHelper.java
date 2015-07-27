@@ -15,7 +15,6 @@ private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     }
     
     public static Map<String, double[]> convertJsonToDictionary(String data) throws JsonGenerationException, JsonMappingException, IOException {
-    	//return OBJECT_MAPPER.readValue(data, Map.class);
     	return OBJECT_MAPPER.readValue(data, new TypeReference<Map<String, double[]>>(){});
     }
 }

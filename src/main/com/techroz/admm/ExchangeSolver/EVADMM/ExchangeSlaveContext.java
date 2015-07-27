@@ -1,5 +1,8 @@
 package main.com.techroz.admm.ExchangeSolver.EVADMM;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import main.com.techroz.admm.Functions.XUpdate;
 
 public class ExchangeSlaveContext extends ExchangeBase {// implements XUpdate {
@@ -13,7 +16,6 @@ public class ExchangeSlaveContext extends ExchangeBase {// implements XUpdate {
 		this.xUpdateFunction = slaveFunction;
 	}
 	
-	//@Override
 	public double[] getXUpdate(String input, int inputIndex) {
 		wholeX[inputIndex] = xOptimal;
 		xOptimal = xUpdateFunction.getXUpdate(input, this, inputIndex);
@@ -22,6 +24,18 @@ public class ExchangeSlaveContext extends ExchangeBase {// implements XUpdate {
 	
 	public double[] getXOld(int index) {
 		return this.wholeX[index];
+	}
+	
+	public Map<String, double[]> getSlaveData() {
+		Map<String, double[]> data = new HashMap<String,double[]>();
+		data.put("xOptimal", xOptimal);
+		
+		return data;
+	}
+	
+	public void setMasterData(Map<String, double[]> data) {
+		this.xMean = data.get("xMean");
+		this.u = data.get("u");
 	}
 	
 }

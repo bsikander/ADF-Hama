@@ -1,6 +1,8 @@
 package main.com.techroz.admm.ExchangeSolver.EVADMM;
 
-import main.com.techroz.admm.Functions.UUpdate;
+import java.util.HashMap;
+import java.util.Map;
+
 import main.com.techroz.admm.Functions.XUpdate;
 import main.com.techroz.utils.Utilities;
 
@@ -29,16 +31,7 @@ public class ExchangeMasterContext extends ExchangeBase {//implements XUpdate, U
 	public double[] getXUpdate(String input, int inputIndex) {
 		xOptimal = xUpdateFunction.getXUpdate(input, this, inputIndex);
 		return xOptimal;
-		//return this.getXUpdate(input, this, inputIndex);
 	}
-	
-//	public ShareMasterData getMasterData()
-//	{
-//		ShareMasterData data = new ShareMasterData();
-//		data.setU(u);
-//		data.setxMean(xMean);
-//		return data;
-//	}
 	
 	public double[] calculateXMean(double[] averageSlaveOptimal,int total) {
 		double[] average = Utilities.vectorAdd(xOptimal, averageSlaveOptimal);
@@ -46,14 +39,18 @@ public class ExchangeMasterContext extends ExchangeBase {//implements XUpdate, U
 		return xMean;
 	}
 	
-//	public double[] calculateU() {
-//		u = Utilities.vectorAdd(u, xMean);
-//		return u;
-//	}
-	
 	public boolean converged() {
 		//TODO: Add logic here
 		return false;
+	}
+	
+	public Map<String, double[]> getMasterData() {
+		Map<String, double[]> data = new HashMap<String,double[]>();
+		
+		data.put("u", u);
+		data.put("xMean", xMean);
+		
+		return data;
 	}
 	
 		

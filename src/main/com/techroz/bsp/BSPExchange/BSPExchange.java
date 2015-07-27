@@ -90,9 +90,6 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 			String printResult = "";
 			for(ResultMaster r : resultMasterList){
 				 printResult = r.printResult(count);
-				 //peer.write(new IntWritable(1), new Text(printResult));
-				 //LOG.info(printResult);
-				 //System.out.println(printResult);
 				
 				count++;
 			}
@@ -106,13 +103,10 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				peer.sync();
 				
 				LOG.info("Slave: Receving the data");
-				//ShareMasterData masterData = BSPHelper.receiveShareMasterDataObject(peer); //Receive xMean and u from master
+
 				Map<String, double[]> masterData =NetworkHelper.convertJsonToDictionary( BSPHelper.receiveShareMasterDataObject(peer)); //Receive xMean and u from master
 				
-//				if(masterData.getU() == null) {
-//					finish = true;
-//					break;
-//				}
+
 				if(masterData.get("u") == null) {
 					finish = true;
 					break;
@@ -145,12 +139,8 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 			peer.sync();
 			if(finish == true) {
 				LOG.info("Slave: Finshed");
-				String printResult = "";
 				for(Result r : resultList){
-					printResult = r.printResult();
-					//System.out.println(printResult);
-					//peer.write(new IntWritable(1), new Text(printResult));
-					//LOG.info(printResult);
+					r.printResult();
 				}
 			}
 			
@@ -189,14 +179,6 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		//AGGREGATOR_PATH = peer.getConfiguration().get(Constants.EVADMM_AGGREGATOR_PATH);
-		//EV_PATH = peer.getConfiguration().get(Constants.EVADMM_EV_PATH);
-		
-		//RHO = Double.parseDouble(peer.getConfiguration().get(Constants.ADF_RHO));
-		//EV_COUNT = Integer.parseInt(peer.getConfiguration().get(Constants.EVADMM_EV_COUNT));
-		
-		//peer.getCounter(ExchangeCounters); //Read all the input and count them and put them in TotalAgents and then reopen the input
 	}
 	
 	enum ExchangeCounters {
