@@ -9,6 +9,7 @@ import main.com.techroz.admm.ExchangeSolver.EVADMM.ShareSlaveData;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.type.TypeReference;
 
 public class NetworkHelper {
 private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -34,6 +35,7 @@ private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     }
     
     public static Map<String, double[]> convertJsonToDictionary(String data) throws JsonGenerationException, JsonMappingException, IOException {
-    	return OBJECT_MAPPER.readValue(data, Map.class);
+    	//return OBJECT_MAPPER.readValue(data, Map.class);
+    	return OBJECT_MAPPER.readValue(data, new TypeReference<Map<String, double[]>>(){});
     }
 }

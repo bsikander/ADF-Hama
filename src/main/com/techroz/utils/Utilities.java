@@ -96,7 +96,7 @@ public class Utilities {
 		return data.get("xOptimal");
 	}
 	
-	public static String getFinishedMessageObject() {
+	public static String getFinishedMessageObject() throws JsonGenerationException, JsonMappingException, IOException {
 		Map<String, double[]> data = new HashMap<String, double[]>();
 		return NetworkHelper.convertDictionaryToJson(data);
 	}

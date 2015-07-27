@@ -8,6 +8,7 @@ import org.apache.commons.lang.ArrayUtils;
 
 import main.com.techroz.admm.Functions.UUpdate;
 import main.com.techroz.admm.Functions.XUpdate;
+import main.com.techroz.utils.Utilities;
 
 public abstract class ExchangeBase implements Context {// implements UUpdate, XUpdate {
 	
@@ -74,10 +75,6 @@ public abstract class ExchangeBase implements Context {// implements UUpdate, XU
 	
 	public void setMasterData(Map<String, double[]> data) {
 		this.xMean = data.get("xMean");
-		//ArrayUtils.toPrimitive(data.get("xMean"));
-		//ArrayUtils.toPrimitive(arg0)
-		//this.xMean =  (double[])(data.get("xMean").toArray());
-		//this.xMean = data.get("xMean").toArray(new double[data.get("xMean").length]));
 		this.u = data.get("u");
 	}
 	
