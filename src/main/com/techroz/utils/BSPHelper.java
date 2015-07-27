@@ -4,15 +4,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import main.com.techroz.admm.ExchangeSolver.EVADMM.ShareMasterData;
-import main.com.techroz.admm.ExchangeSolver.EVADMM.ShareSlaveData;
 import main.com.techroz.bsp.BSPBase;
 import main.com.techroz.bsp.BSPExchange.BSPExchange;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
 import org.apache.hama.bsp.BSPPeer;
