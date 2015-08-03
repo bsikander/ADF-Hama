@@ -25,11 +25,11 @@ import main.com.techroz.deleteme.ResultMaster;
 public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, Text> {
 	public static final Log LOG = LogFactory.getLog(BSPExchange.class);
 
-	protected static BSPPeer<LongWritable, Text, IntWritable, Text, Text> bspPeer;
+	//protected static BSPPeer<LongWritable, Text, IntWritable, Text, Text> bspPeer;
 	ExchangeMasterContext masterContext;
 	ExchangeSlaveContext slaveContext;
 	
-	protected static int ADF_ADMM_ITERATIONS_MAX;
+	
 	protected static double RHO;
 	protected static int XOPTIMAL_SIZE;
 	
@@ -51,7 +51,9 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				
 				//Send U and XMean to all slaves
 				//Get the Map and convert it to String and send to slaves
-				BSPHelper.sendShareMasterObjectToSlaves(BroadcastHelper.convertDictionaryToJson(masterContext.getMasterData()),peer);
+				//BSPHelper.sendShareMasterObjectToSlaves(BroadcastHelper.convertDictionaryToJson(masterContext.getMasterData()),peer);
+				sendDataToSlaves(peer,BroadcastHelper.convertDictionaryToJson( masterContext.getMasterData() ));
+				
 				peer.sync();  
 				
 				String input = peer.readNext().getValue().toString();
@@ -79,7 +81,8 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 			
 			//TODO: Send Finished message
 			LOG.info("Master: Finished");
-			BSPHelper.sendFinishMessage(peer);
+			//BSPHelper.sendFinishMessage(peer);
+			sendFinishSignal(peer);
 			peer.sync();
 			peer.sync();
 			
@@ -102,7 +105,8 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				
 				LOG.info("Slave: Receving the data");
 
-				Map<String, double[]> masterData = BroadcastHelper.convertJsonToDictionary( BSPHelper.receiveShareMasterDataObject(peer)); //Receive xMean and u from master
+				//Map<String, double[]> masterData = BroadcastHelper.convertJsonToDictionary( BSPHelper.receiveShareMasterDataObject(peer)); //Receive xMean and u from master
+				Map<String, double[]> masterData = BroadcastHelper.convertJsonToDictionary( receiveDataAtSlave(peer) ); //Receive xMean and u from master
 				
 
 				if(masterData.get("u") == null) {
@@ -125,7 +129,8 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 					
 					resultList.add(new Result(peer.getPeerName(),i,0, slaveContext.getXOld(i), masterData.get("xMean"),masterData.get("u"),slaveContext.getXOptimal(),0));
 					
-					BSPHelper.sendShareSlaveObjectToMaster(BroadcastHelper.convertDictionaryToJson(slaveContext.getSlaveData()),peer); //Send x* to master
+					//BSPHelper.sendShareSlaveObjectToMaster(BroadcastHelper.convertDictionaryToJson(slaveContext.getSlaveData()),peer); //Send x* to master
+					sendDataToMaster(peer, BroadcastHelper.convertDictionaryToJson(slaveContext.getSlaveData()));  //Send x* to master
 					
 					i++;
 				}
@@ -148,12 +153,13 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 	@Override
 	public void setup(BSPPeer<LongWritable, Text, IntWritable, Text, Text> peer) throws IOException,
 	      SyncException, InterruptedException {
-		LOG.info(peer.getPeerName() + " is starting up");
+		//LOG.info(peer.getPeerName() + " is starting up");
 		
-		BSPBase.masterTask = peer.getPeerName(0); //0 is out master
-		BSPExchange.bspPeer = peer;
+		//BSPBase.masterTask = peer.getPeerName(0); //0 is out master
+		super.setup(peer);
+		//BSPExchange.bspPeer = peer;
 		
-		ADF_ADMM_ITERATIONS_MAX = Integer.parseInt(peer.getConfiguration().get(Constants.ADF_MAX_ITERATIONS));
+		//ADF_ADMM_ITERATIONS_MAX = Integer.parseInt(peer.getConfiguration().get(Constants.ADF_MAX_ITERATIONS));
 		XOPTIMAL_SIZE = Integer.parseInt(peer.getConfiguration().get(Constants.ADF_XOPTIMAL_SIZE));
 		
 		Class<? extends XUpdate> masterFunction = (Class<? extends XUpdate>) peer.getConfiguration().getClass(Constants.ADF_FUNCTION1, XUpdate.class);
