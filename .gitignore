@@ -1,5 +1,10 @@
 *.class
 
+bin/
+logfile_master
+logfile_slave
+output/
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
