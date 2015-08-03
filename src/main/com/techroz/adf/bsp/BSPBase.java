@@ -2,9 +2,13 @@ package main.com.techroz.adf.bsp;
 
 import java.io.IOException;
 
+import main.com.techroz.adf.admm.ContextBase;
+import main.com.techroz.adf.admm.XUpdate;
 import main.com.techroz.adf.utils.Constants;
 import main.com.techroz.adf.utils.Utilities;
 import main.com.techroz.algorithm.exchange.BSPExchange;
+import main.com.techroz.algorithm.exchange.ExchangeMasterContext;
+import main.com.techroz.algorithm.exchange.ExchangeSlaveContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -75,6 +79,7 @@ public abstract class BSPBase<K1, V1, K2, V2, M extends Writable> extends BSP<K1
 	@SuppressWarnings({ "unchecked" })
 	protected void sendFinishSignal(BSPPeer<K1, V1, K2, V2, M> peer) throws IOException
 	{	
+		LOG.info("Sending finished message");
 		for(String peerName: peer.getAllPeerNames()) {
 			if(!peerName.equals(BSPBase.masterTask)) {
 					peer.send(peerName, (M) new Text(Utilities.getFinishedMessageObject()));
@@ -101,6 +106,27 @@ public abstract class BSPBase<K1, V1, K2, V2, M extends Writable> extends BSP<K1
 		}
 	
 		return averageXReceived;
+	}
+	
+	/*
+	 * This function returns the object of class that is passed as generic parameter. It uses the configuration key
+	 * to look for the class inside the configuration object of Hama. Using the generic parameter is casts the object
+	 * to a class of type T and then create its objects. The object is returned back.
+	 */
+	@SuppressWarnings("unchecked")
+	protected <T> T getClassFromConfiguration(BSPPeer<K1,V1,K2,V2,M> peer, String configurationKey, Class<? extends T> clazz)  {
+		try {
+			return ((T)peer.getConfiguration().getClass(configurationKey, clazz).newInstance());
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			LOG.error(e.getMessage());
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			LOG.error(e.getMessage());
+		}
+		return null;
 	}
 	
 	enum ExchangeCounters {

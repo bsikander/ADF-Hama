@@ -45,7 +45,6 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				
 				//Send U and XMean to all slaves
 				//Get the Map and convert it to String and send to slaves
-				//BSPHelper.sendShareMasterObjectToSlaves(BroadcastHelper.convertDictionaryToJson(masterContext.getMasterData()),peer);
 				sendDataToSlaves(peer,BroadcastHelper.convertDictionaryToJson( masterContext.getMasterData() ));
 				
 				peer.sync();  
@@ -56,7 +55,6 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				
 				peer.sync();
 				
-				//double[] average = BSPHelper.getAverageOfReceivedOptimalSlaveValues(peer); //Get average of all the data received
 				double[] average = calculateAverageOfReceivedSlaveValues(peer);
 				LOG.info("--------- AVERAGE AT MASTER ---------" );
 				Utilities.PrintArray(average);
@@ -99,8 +97,7 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				peer.sync();
 				
 				LOG.info("Slave: Receving the data");
-
-				//Map<String, double[]> masterData = BroadcastHelper.convertJsonToDictionary( BSPHelper.receiveShareMasterDataObject(peer)); //Receive xMean and u from master
+				
 				Map<String, double[]> masterData = BroadcastHelper.convertJsonToDictionary( receiveDataAtSlave(peer) ); //Receive xMean and u from master
 				
 
@@ -119,12 +116,10 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				int i = 0;
 			
 				while(peer.readNext(key, value) != false) {
-					//System.out.println("Slave: Optimize the slave data" + i +" >>>" + value.toString());
 					slaveContext.getXUpdate(value.toString(),i);
 					
 					resultList.add(new Result(peer.getPeerName(),i,0, slaveContext.getXOld(i), masterData.get("xMean"),masterData.get("u"),slaveContext.getXOptimal(),0));
 					
-					//BSPHelper.sendShareSlaveObjectToMaster(BroadcastHelper.convertDictionaryToJson(slaveContext.getSlaveData()),peer); //Send x* to master
 					sendDataToMaster(peer, BroadcastHelper.convertDictionaryToJson(slaveContext.getSlaveData()));  //Send x* to master
 					
 					i++;
@@ -150,22 +145,12 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 	      SyncException, InterruptedException {
 		
 		super.setup(peer);
-		
-		Class<? extends XUpdate> masterFunction = (Class<? extends XUpdate>) peer.getConfiguration().getClass(Constants.ADF_FUNCTION1, XUpdate.class);
-		Class<? extends XUpdate> slaveFunction = (Class<? extends XUpdate>) peer.getConfiguration().getClass(Constants.ADF_FUNCTION2, XUpdate.class);
-		
-		try {
-			if(peer.getPeerName().equals(BSPBase.masterTask)) //If master then initialize master context otherwise slave
-				masterContext = new ExchangeMasterContext(XOPTIMAL_SIZE, masterFunction.newInstance());
-			else 
-				slaveContext = new ExchangeSlaveContext(XOPTIMAL_SIZE, slaveFunction.newInstance());
+		//Initialize the master and slave objects with the functions passed by user as input
+		if(peer.getPeerName().equals(BSPBase.masterTask)) //If master then initialize master context otherwise slave
+			masterContext = new ExchangeMasterContext(XOPTIMAL_SIZE, getClassFromConfiguration(peer, Constants.ADF_FUNCTION1, XUpdate.class));
+		else
+			slaveContext = new ExchangeSlaveContext(XOPTIMAL_SIZE,getClassFromConfiguration(peer, Constants.ADF_FUNCTION2, XUpdate.class));
 			
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-			LOG.error(e.getMessage());
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-			LOG.error(e.getMessage());
-		}
 	}
+	
 }
