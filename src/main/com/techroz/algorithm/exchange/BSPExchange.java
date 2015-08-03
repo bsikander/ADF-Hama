@@ -24,14 +24,9 @@ import main.com.techroz.deleteme.ResultMaster;
 
 public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, Text> {
 	public static final Log LOG = LogFactory.getLog(BSPExchange.class);
-
-	//protected static BSPPeer<LongWritable, Text, IntWritable, Text, Text> bspPeer;
+	
 	ExchangeMasterContext masterContext;
 	ExchangeSlaveContext slaveContext;
-	
-	
-	protected static double RHO;
-	protected static int XOPTIMAL_SIZE;
 	
 	List<Result> resultList = new ArrayList<Result>();
 	List<ResultMaster> resultMasterList = new ArrayList<ResultMaster>();
@@ -62,7 +57,8 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				
 				peer.sync();
 				
-				double[] average = BSPHelper.getAverageOfReceivedOptimalSlaveValues(peer); //Get average of all the data received
+				//double[] average = BSPHelper.getAverageOfReceivedOptimalSlaveValues(peer); //Get average of all the data received
+				double[] average = calculateAverageOfReceivedSlaveValues(peer);
 				LOG.info("--------- AVERAGE AT MASTER ---------" );
 				Utilities.PrintArray(average);
 				LOG.info("--------- AVERAGE AT MASTER ---------" );
@@ -153,38 +149,24 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 	@Override
 	public void setup(BSPPeer<LongWritable, Text, IntWritable, Text, Text> peer) throws IOException,
 	      SyncException, InterruptedException {
-		//LOG.info(peer.getPeerName() + " is starting up");
 		
-		//BSPBase.masterTask = peer.getPeerName(0); //0 is out master
 		super.setup(peer);
-		//BSPExchange.bspPeer = peer;
-		
-		//ADF_ADMM_ITERATIONS_MAX = Integer.parseInt(peer.getConfiguration().get(Constants.ADF_MAX_ITERATIONS));
-		XOPTIMAL_SIZE = Integer.parseInt(peer.getConfiguration().get(Constants.ADF_XOPTIMAL_SIZE));
 		
 		Class<? extends XUpdate> masterFunction = (Class<? extends XUpdate>) peer.getConfiguration().getClass(Constants.ADF_FUNCTION1, XUpdate.class);
 		Class<? extends XUpdate> slaveFunction = (Class<? extends XUpdate>) peer.getConfiguration().getClass(Constants.ADF_FUNCTION2, XUpdate.class);
 		
 		try {
-			if(peer.getPeerName().equals(BSPBase.masterTask)) { //If master then initialize master context otherwise slave
-				//context = new ExchangeContext(XOPTIMAL_SIZE, masterFunction.newInstance());
+			if(peer.getPeerName().equals(BSPBase.masterTask)) //If master then initialize master context otherwise slave
 				masterContext = new ExchangeMasterContext(XOPTIMAL_SIZE, masterFunction.newInstance());
-			}
-			else {
+			else 
 				slaveContext = new ExchangeSlaveContext(XOPTIMAL_SIZE, slaveFunction.newInstance());
-			}
 			
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			LOG.error(e.getMessage());
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			LOG.error(e.getMessage());
 		}
 	}
-	
-	enum ExchangeCounters {
-		TotalAgents
-	}
-	
 }

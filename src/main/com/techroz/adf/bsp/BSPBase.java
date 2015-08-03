@@ -21,6 +21,7 @@ public abstract class BSPBase<K1, V1, K2, V2, M extends Writable> extends BSP<K1
 	
 	protected static String masterTask;
 	protected static int ADF_ADMM_ITERATIONS_MAX;
+	protected static int XOPTIMAL_SIZE; //size of solution vector
 	
 	@Override
 	public abstract void bsp(BSPPeer<K1, V1, K2, V2, M> peer) throws IOException,
@@ -32,7 +33,9 @@ public abstract class BSPBase<K1, V1, K2, V2, M extends Writable> extends BSP<K1
 		LOG.info(peer.getPeerName() + " is starting up");
 		
 		BSPBase.masterTask = peer.getPeerName(0); //0 is our master
+		
 		ADF_ADMM_ITERATIONS_MAX = Integer.parseInt(peer.getConfiguration().get(Constants.ADF_MAX_ITERATIONS));
+		XOPTIMAL_SIZE = Integer.parseInt(peer.getConfiguration().get(Constants.ADF_XOPTIMAL_SIZE));
 	}
 
 	@Override
@@ -45,7 +48,7 @@ public abstract class BSPBase<K1, V1, K2, V2, M extends Writable> extends BSP<K1
 	 * @throws IOException
 	 */
 	@SuppressWarnings("unchecked")
-	public void sendDataToSlaves(BSPPeer<K1, V1, K2, V2, M> peer, String data) throws IOException {
+	protected void sendDataToSlaves(BSPPeer<K1, V1, K2, V2, M> peer, String data) throws IOException {
 		for(String p : peer.getAllPeerNames()) {
 			if(!p.equals(masterTask)) {
 				peer.send(p, (M) new Text(data));
@@ -54,7 +57,7 @@ public abstract class BSPBase<K1, V1, K2, V2, M extends Writable> extends BSP<K1
 	}
 	
 	//receiveShareMasterDataObject
-	public String receiveDataAtSlave(BSPPeer<K1, V1, K2, V2, M> peer) throws IOException
+	protected String receiveDataAtSlave(BSPPeer<K1, V1, K2, V2, M> peer) throws IOException
 	{
 		M receivedJson;
 		
@@ -70,7 +73,7 @@ public abstract class BSPBase<K1, V1, K2, V2, M extends Writable> extends BSP<K1
 	//sendFinishMessage
 	
 	@SuppressWarnings({ "unchecked" })
-	public void sendFinishSignal(BSPPeer<K1, V1, K2, V2, M> peer) throws IOException
+	protected void sendFinishSignal(BSPPeer<K1, V1, K2, V2, M> peer) throws IOException
 	{	
 		for(String peerName: peer.getAllPeerNames()) {
 			if(!peerName.equals(BSPBase.masterTask)) {
@@ -81,8 +84,26 @@ public abstract class BSPBase<K1, V1, K2, V2, M extends Writable> extends BSP<K1
 	
 	//sendShareSlaveObjectToMaster
 	@SuppressWarnings("unchecked")
-	public static <K1,V1,K2,V2,M extends Writable> void sendDataToMaster(BSPPeer<K1,V1,K2,V2,M> peer, String data) throws IOException
+	protected static <K1,V1,K2,V2,M extends Writable> void sendDataToMaster(BSPPeer<K1,V1,K2,V2,M> peer, String data) throws IOException
 	{	
 		peer.send(masterTask, (M) new Text(data));
+	}
+	
+	//getAverageOfReceivedOptimalSlaveValues
+	protected double[] calculateAverageOfReceivedSlaveValues(BSPPeer<K1,V1,K2,V2,M> peer) throws IOException
+	{	
+		M receivedJson;
+		double[] averageXReceived = Utilities.getZeroArray(XOPTIMAL_SIZE); 
+				
+		while ((receivedJson = peer.getCurrentMessage()) != null) //Receive initial array 
+		{	
+			averageXReceived =  Utilities.vectorAdd(averageXReceived, Utilities.getXOptimalFromJson(receivedJson.toString()));
+		}
+	
+		return averageXReceived;
+	}
+	
+	enum ExchangeCounters {
+		TotalAgents
 	}
 }
