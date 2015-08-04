@@ -27,6 +27,8 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 	ExchangeMasterContext masterContext;
 	ExchangeSlaveContext slaveContext;
 	
+	protected static int TOTAL_INPUT; //size of solution vector
+	
 	List<Result> resultList = new ArrayList<Result>();
 	List<ResultMaster> resultMasterList = new ArrayList<ResultMaster>();
 	
@@ -51,7 +53,7 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				
 				String input = peer.readNext().getValue().toString();
 				LOG.info("Master: Sending aggregator data to optimize >> " + input);
-				masterContext.getXUpdate(input,11); //TODO:Optimize Master Equation
+				masterContext.getXUpdate(input,0); //0 => it is a dummy value. because for Exchange problem we only have 1 data row (aggregator.mat)
 				
 				peer.sync();
 				
@@ -61,6 +63,10 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				LOG.info("--------- AVERAGE AT MASTER ---------" );
 				
 				masterContext.calculateXMean(average, 11); //TODO: Replace this dummy 10 from here
+				//peer.getCounter(ADFCounters.TotalInput).getValue();  //TODO: Fix this
+				//LOG.info("%%%%%%%% total ="+((int) peer.getCounter(ADFCounters.TotalInput).getValue()) +1 );
+				//masterContext.calculateXMean(average, ((int) peer.getCounter(ADFCounters.TotalInput).getValue()) +1 );
+				
 				masterContext.calculateU();
 				
 				resultMasterList.add(new ResultMaster(peer.getPeerName(),k,0,masterContext.getU(),masterContext.getxMean(),masterContext.getXOptimal(),0,average));
@@ -71,10 +77,8 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 			}
 			
 			LOG.info(peer.getPeerName() + "Master 1.8:: Sending finishing message");
-			
-			//TODO: Send Finished message
 			LOG.info("Master: Finished");
-			//BSPHelper.sendFinishMessage(peer);
+			
 			sendFinishSignal(peer);
 			peer.sync();
 			peer.sync();
@@ -126,7 +130,6 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				}
 				
 				peer.sync(); //Send all the data
-				//TODO: Check for finished message
 				peer.reopenInput(); //Since we are going to the next iteration ... start the data again
 			}
 			peer.sync();
@@ -150,7 +153,25 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 			masterContext = new ExchangeMasterContext(XOPTIMAL_SIZE, getClassFromConfiguration(peer, Constants.ADF_FUNCTION1, XUpdate.class));
 		else
 			slaveContext = new ExchangeSlaveContext(XOPTIMAL_SIZE,getClassFromConfiguration(peer, Constants.ADF_FUNCTION2, XUpdate.class));
+		
+		//Calculate total slave input size
+		if(!peer.getPeerName().equals(BSPBase.masterTask)) {
+			LongWritable key = new LongWritable();
+			Text value = new Text();
 			
+			//Read each input
+			int inputCount = 0;
+		
+			while(peer.readNext(key, value) != false) {
+				inputCount++;
+			}
+			TOTAL_INPUT = inputCount;
+			peer.reopenInput();
+			
+			peer.getCounter(ADFCounters.TotalInput).increment(TOTAL_INPUT);
+			LOG.info("####### " + peer.getPeerName() + " #### Input Count" + TOTAL_INPUT);
+		}
+		
 	}
 	
 }

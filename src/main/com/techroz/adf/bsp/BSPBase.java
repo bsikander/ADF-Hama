@@ -118,18 +118,16 @@ public abstract class BSPBase<K1, V1, K2, V2, M extends Writable> extends BSP<K1
 		try {
 			return ((T)peer.getConfiguration().getClass(configurationKey, clazz).newInstance());
 		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			LOG.error(e.getMessage());
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			LOG.error(e.getMessage());
 		}
 		return null;
 	}
 	
-	enum ExchangeCounters {
-		TotalAgents
+	protected enum ADFCounters {
+		TotalInput
 	}
 }

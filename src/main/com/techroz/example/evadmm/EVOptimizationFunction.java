@@ -17,8 +17,8 @@ import main.com.techroz.adf.admm.XUpdate;
 import main.com.techroz.adf.utils.Utilities;
 import main.com.techroz.algorithm.exchange.ExchangeSlaveContext;
 
-public class CPLEXEVSlaveFunction implements XUpdate{
-	public static final Log LOG = LogFactory.getLog(CPLEXEVSlaveFunction.class);
+public class EVOptimizationFunction implements XUpdate{
+	public static final Log LOG = LogFactory.getLog(EVOptimizationFunction.class);
 
 	double[] xi_min;
 	double[] xi_max;
@@ -33,7 +33,6 @@ public class CPLEXEVSlaveFunction implements XUpdate{
 	
 	@Override
 	public double[] getXUpdate(String input,ContextBase context, int inputIndex) {
-		// TODO Auto-generated method stub
 		LOG.info("CPLEXEVSlaveFunction here");
 		parse(input);
 		
@@ -42,10 +41,10 @@ public class CPLEXEVSlaveFunction implements XUpdate{
 			return	optimize(context, inputIndex);
 			
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			LOG.info(e.getMessage());
 			e.printStackTrace();
 		} catch (IloException e) {
-			// TODO Auto-generated catch block
+			LOG.info(e.getMessage());
 			e.printStackTrace();
 		}
 		
@@ -57,8 +56,7 @@ public class CPLEXEVSlaveFunction implements XUpdate{
 		IloCplex cplex = new IloCplex();
 		OutputStream out = new FileOutputStream("logfile_slave");
 		cplex.setOut(out);
-		
-		//TODO: Verify this design decision
+
 		double[] x_old = ((ExchangeSlaveContext) context).getXOld(inputIndex);
 		double[] u = ((ExchangeSlaveContext) context).getU();
 		double[] xMean = ((ExchangeSlaveContext) context).getxMean();
@@ -125,11 +123,6 @@ public class CPLEXEVSlaveFunction implements XUpdate{
 		LOG.info("SLAVE : PRINTING X_OPTIMAL VALUE");
 		Utilities.PrintArray(xOptimal);
 		
-		//TODO: What to do with saving the optimal value ?
-		//Write the x_optimal to mat file
-		//Utilities.SlaveXToMatFile(evFileName, x_optimal, conf);
-		
-		//return cplex.getObjValue();
 		return xOptimal;
 	}
 	

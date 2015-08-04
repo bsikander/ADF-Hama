@@ -14,8 +14,8 @@ public class Main {
 		job.setInputPath("/Users/raja/Documents/workspace/ADFHama/data/aggregator.txt,/Users/raja/Documents/workspace/ADFHama/data/EVs.txt");
 		job.setOutputPath("/Users/raja/Documents/workspace/ADFHama/output/");
      	job.setSolutionVectorSize(96); //TODO: Find some alternative. Try to make it part of BSPExchange class
-		job.setFunction1(CPLEXEVMasterFunction.class);
-		job.setFunction2(CPLEXEVSlaveFunction.class);
+		job.setFunction1(PriceBasedOptimizationFunction.class);
+		job.setFunction2(EVOptimizationFunction.class);
 		job.setADMMClass(BSPExchange.class);
 		
 		job.run();

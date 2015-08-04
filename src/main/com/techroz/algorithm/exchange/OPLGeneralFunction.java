@@ -7,7 +7,7 @@ public class OPLGeneralFunction implements XUpdate {
 
 	@Override
 	public double[] getXUpdate(String input, ContextBase context, int inputIndex) {
-		// TODO Auto-generated method stub
+		
 		return null;
 	}
 

@@ -17,8 +17,8 @@ import main.com.techroz.adf.admm.XUpdate;
 import main.com.techroz.adf.utils.Utilities;
 import main.com.techroz.algorithm.exchange.ExchangeMasterContext;
 
-public class CPLEXEVMasterFunction implements XUpdate {
-	public static final Log LOG = LogFactory.getLog(CPLEXEVMasterFunction.class);
+public class PriceBasedOptimizationFunction implements XUpdate {
+	public static final Log LOG = LogFactory.getLog(PriceBasedOptimizationFunction.class);
 	
 	private double[] price;
 	private double[] xa_min;
@@ -27,10 +27,7 @@ public class CPLEXEVMasterFunction implements XUpdate {
 	
 	
 	@Override
-	//public double[] getXUpdate(String input, ExchangeContext context, int inputIndex) {
-	//public double[] getXUpdate(String input, Context context, int inputIndex) {
 	public double[] getXUpdate(String input, ContextBase context, int inputIndex) {
-		// TODO Auto-generated method stub
 		LOG.info("CPLEXEVMaster Function here");
 		context = (ExchangeMasterContext) context;
 		
@@ -39,10 +36,10 @@ public class CPLEXEVMasterFunction implements XUpdate {
 		try {
 			return optimize(context);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			LOG.info(e.getMessage());
 			e.printStackTrace();
 		} catch (IloException e) {
-			// TODO Auto-generated catch block
+			LOG.info(e.getMessage());
 			e.printStackTrace();
 		}
 		return null;
@@ -53,8 +50,7 @@ public class CPLEXEVMasterFunction implements XUpdate {
 		IloCplex cplex = new IloCplex();
 		OutputStream out = new FileOutputStream("logfile_master");
 		cplex.setOut(out);
-		
-		//TODO: Verify this design decision
+
 		double[] x = ((ExchangeMasterContext) context).getXOptimal();
 		double[] u = ((ExchangeMasterContext) context).getU();
 		double[] xMean = ((ExchangeMasterContext) context).getxMean();

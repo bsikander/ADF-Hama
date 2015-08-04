@@ -13,7 +13,8 @@ public class ExchangeSlaveContext extends ContextBase {
 	public ExchangeSlaveContext(int size, XUpdate slaveFunction) {
 		super(size);
 		
-		wholeX = new double[size][11]; //TODO: a matrix with 96 by number of EV processed on this machine
+		//wholeX = new double[size][11]; //a matrix with 96 by number of EV processed on this machine
+		wholeX = new double[size][];
 		this.xUpdateFunction = slaveFunction;
 	}
 	
