@@ -13,6 +13,7 @@ import main.com.techroz.algorithm.exchange.ExchangeSlaveContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.Writable;
@@ -125,6 +126,18 @@ public abstract class BSPBase<K1, V1, K2, V2, M extends Writable> extends BSP<K1
 			LOG.error(e.getMessage());
 		}
 		return null;
+	}
+	
+	protected int countInput(BSPPeer<K1,V1,K2,V2,M> peer) throws IOException {
+		int count = 0;
+		
+		if(!peer.getPeerName().equals(BSPBase.masterTask))
+			while(peer.readNext() != null) {
+				count++;
+			}
+			peer.reopenInput();
+		
+		return count;
 	}
 	
 	protected enum ADFCounters {

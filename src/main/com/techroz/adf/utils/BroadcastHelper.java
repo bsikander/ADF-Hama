@@ -2,7 +2,9 @@ package main.com.techroz.adf.utils;
 
 import java.io.IOException;
 import java.util.Map;
+
 import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
@@ -16,5 +18,9 @@ private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     
     public static Map<String, double[]> convertJsonToDictionary(String data) throws JsonGenerationException, JsonMappingException, IOException {
     	return OBJECT_MAPPER.readValue(data, new TypeReference<Map<String, double[]>>(){});
+    }
+    
+    public static int convertJsonToInterger(String data) throws JsonParseException, JsonMappingException, IOException {
+    	return Integer.parseInt(OBJECT_MAPPER.readValue(data, String.class));
     }
 }

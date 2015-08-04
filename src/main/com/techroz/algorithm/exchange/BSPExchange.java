@@ -62,11 +62,7 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				Utilities.PrintArray(average);
 				LOG.info("--------- AVERAGE AT MASTER ---------" );
 				
-				masterContext.calculateXMean(average, 11); //TODO: Replace this dummy 10 from here
-				//peer.getCounter(ADFCounters.TotalInput).getValue();  //TODO: Fix this
-				//LOG.info("%%%%%%%% total ="+((int) peer.getCounter(ADFCounters.TotalInput).getValue()) +1 );
-				//masterContext.calculateXMean(average, ((int) peer.getCounter(ADFCounters.TotalInput).getValue()) +1 );
-				
+				masterContext.calculateXMean(average, TOTAL_INPUT + 1);
 				masterContext.calculateU();
 				
 				resultMasterList.add(new ResultMaster(peer.getPeerName(),k,0,masterContext.getU(),masterContext.getxMean(),masterContext.getXOptimal(),0,average));
@@ -154,24 +150,26 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 		else
 			slaveContext = new ExchangeSlaveContext(XOPTIMAL_SIZE,getClassFromConfiguration(peer, Constants.ADF_FUNCTION2, XUpdate.class));
 		
-		//Calculate total slave input size
-		if(!peer.getPeerName().equals(BSPBase.masterTask)) {
-			LongWritable key = new LongWritable();
-			Text value = new Text();
+		//Count the total input
+		if(peer.getPeerName().equals(BSPBase.masterTask)) {
+			peer.sync(); //wait for input size to come in
 			
-			//Read each input
-			int inputCount = 0;
-		
-			while(peer.readNext(key, value) != false) {
-				inputCount++;
+			Text receivedJson;
+			//read the input size and save it in total_input
+			while ((receivedJson = peer.getCurrentMessage()) != null) //Receive initial array
+			{
+				TOTAL_INPUT += BroadcastHelper.convertJsonToInterger(receivedJson.toString());
 			}
-			TOTAL_INPUT = inputCount;
-			peer.reopenInput();
 			
-			peer.getCounter(ADFCounters.TotalInput).increment(TOTAL_INPUT);
-			LOG.info("####### " + peer.getPeerName() + " #### Input Count" + TOTAL_INPUT);
+			LOG.info("******* Receiving input: " + TOTAL_INPUT);
 		}
-		
+		else {
+			Integer inputCount = countInput(peer); //count the input and send it to master
+			if(inputCount != 0) {
+				sendDataToMaster(peer, inputCount.toString());
+			}
+			LOG.info("******* Sending input: " + inputCount);
+			peer.sync();
+		}
 	}
-	
 }
