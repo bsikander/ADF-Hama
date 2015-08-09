@@ -10,8 +10,8 @@ import main.com.techroz.adf.utils.Utilities;
 public class ExchangeMasterContext extends ContextBase {
 	XUpdate xUpdateFunction;
 	
-	public ExchangeMasterContext(int size, XUpdate masterFunction) {
-		super(size);
+	public ExchangeMasterContext(int size, XUpdate masterFunction, Map<String, String> configurationProperties) {
+		super(size, configurationProperties);
 		
 		this.xUpdateFunction = masterFunction;
 	}
@@ -21,8 +21,9 @@ public class ExchangeMasterContext extends ContextBase {
 		return u;
 	}
 	
-	public double[] getXUpdate(String input, int inputIndex) {
-		xOptimal = xUpdateFunction.getXUpdate(input, this, inputIndex);
+	public double[] getXUpdate(String input) {
+		//xOptimal = xUpdateFunction.getXUpdate(input, this, inputIndex);
+		xOptimal = xUpdateFunction.getXUpdate(input, this);
 		return xOptimal;
 	}
 	

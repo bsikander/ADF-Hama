@@ -27,7 +27,7 @@ public class PriceBasedOptimizationFunction implements XUpdate {
 	
 	
 	@Override
-	public double[] getXUpdate(String input, ContextBase context, int inputIndex) {
+	public double[] getXUpdate(String input, ContextBase context) {
 		LOG.info("CPLEXEVMaster Function here");
 		context = (ExchangeMasterContext) context;
 		
@@ -81,7 +81,6 @@ public class PriceBasedOptimizationFunction implements XUpdate {
 		
 		xOptimal = new double[x_n.length];
 		
-		//System.out.println("======= MASTER: OPTIMZATION ARRAY =====");
 		for(int u1=0; u1 < x_n.length; u1++)
 		{
 			xOptimal[u1] = cplex.getValues(x_n)[u1];
@@ -105,7 +104,7 @@ public class PriceBasedOptimizationFunction implements XUpdate {
 	
 	private double[] getArray(String input) {
 		double[] arr;
-		//System.out.println("GetArray -> " + input);
+		
 		input = input.substring(1,input.length() - 1); //remove [ ] symbols
 		String[] values = input.split(",");
 		arr = new double[values.length];

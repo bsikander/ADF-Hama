@@ -1,6 +1,7 @@
 package main.com.techroz.adf.bsp;
 
 import java.io.IOException;
+import java.util.Map;
 
 import main.com.techroz.adf.admm.ContextBase;
 import main.com.techroz.adf.admm.XUpdate;
@@ -90,7 +91,8 @@ public abstract class BSPBase<K1, V1, K2, V2, M extends Writable> extends BSP<K1
 	
 	//sendShareSlaveObjectToMaster
 	@SuppressWarnings("unchecked")
-	protected static <K1,V1,K2,V2,M extends Writable> void sendDataToMaster(BSPPeer<K1,V1,K2,V2,M> peer, String data) throws IOException
+	protected void sendDataToMaster(BSPPeer<K1,V1,K2,V2,M> peer, String data) throws IOException
+	//protected static <K1,V1,K2,V2,M extends Writable> void sendDataToMaster(BSPPeer<K1,V1,K2,V2,M> peer, String data) throws IOException
 	{	
 		peer.send(masterTask, (M) new Text(data));
 	}
@@ -138,6 +140,10 @@ public abstract class BSPBase<K1, V1, K2, V2, M extends Writable> extends BSP<K1
 			peer.reopenInput();
 		
 		return count;
+	}
+	
+	protected Map<String,String> getAllConfiguration(BSPPeer<K1,V1,K2,V2,M> peer) {
+		return peer.getConfiguration().getValByRegex(Constants.ADF_CONFIGURATION_REGEX);
 	}
 	
 	protected enum ADFCounters {

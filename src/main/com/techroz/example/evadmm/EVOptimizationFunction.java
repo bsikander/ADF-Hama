@@ -32,13 +32,15 @@ public class EVOptimizationFunction implements XUpdate{
 	double[][] B;
 	
 	@Override
-	public double[] getXUpdate(String input,ContextBase context, int inputIndex) {
+	//public double[] getXUpdate(String input,ContextBase context, int inputIndex) {
+	public double[] getXUpdate(String input,ContextBase context) {
 		LOG.info("CPLEXEVSlaveFunction here");
 		parse(input);
 		
 		try {
 			
-			return	optimize(context, inputIndex);
+			//return	optimize(context, inputIndex);
+			return	optimize(context);
 			
 		} catch (FileNotFoundException e) {
 			LOG.info(e.getMessage());
@@ -51,13 +53,14 @@ public class EVOptimizationFunction implements XUpdate{
 		return null;
 	}
 	
-	public double[] optimize(ContextBase context, int inputIndex) throws IloException, FileNotFoundException
+	//public double[] optimize(ContextBase context, int inputIndex) throws IloException, FileNotFoundException
+	public double[] optimize(ContextBase context) throws IloException, FileNotFoundException
 	{
 		IloCplex cplex = new IloCplex();
 		OutputStream out = new FileOutputStream("logfile_slave");
 		cplex.setOut(out);
 
-		double[] x_old = ((ExchangeSlaveContext) context).getXOld(inputIndex);
+		double[] x_old = ((ExchangeSlaveContext) context).getCurrentXOld();
 		double[] u = ((ExchangeSlaveContext) context).getU();
 		double[] xMean = ((ExchangeSlaveContext) context).getxMean();
 		double[] xOptimal = new double[x_old.length];

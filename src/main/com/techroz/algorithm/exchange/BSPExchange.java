@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,7 +54,7 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				
 				String input = peer.readNext().getValue().toString();
 				LOG.info("Master: Sending aggregator data to optimize >> " + input);
-				masterContext.getXUpdate(input,0); //0 => it is a dummy value. because for Exchange problem we only have 1 data row (aggregator.mat)
+				masterContext.getXUpdate(input);
 				
 				peer.sync();
 				
@@ -118,7 +119,7 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				while(peer.readNext(key, value) != false) {
 					slaveContext.getXUpdate(value.toString(),i);
 					
-					resultList.add(new Result(peer.getPeerName(),i,0, slaveContext.getXOld(i), masterData.get("xMean"),masterData.get("u"),slaveContext.getXOptimal(),0));
+					resultList.add(new Result(peer.getPeerName(),i,0, slaveContext.getCurrentXOld(), masterData.get("xMean"),masterData.get("u"),slaveContext.getXOptimal(),0));
 					
 					sendDataToMaster(peer, BroadcastHelper.convertDictionaryToJson(slaveContext.getSlaveData()));  //Send x* to master
 					
@@ -146,9 +147,9 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 		super.setup(peer);
 		//Initialize the master and slave objects with the functions passed by user as input
 		if(peer.getPeerName().equals(BSPBase.masterTask)) //If master then initialize master context otherwise slave
-			masterContext = new ExchangeMasterContext(XOPTIMAL_SIZE, getClassFromConfiguration(peer, Constants.ADF_FUNCTION1, XUpdate.class));
+			masterContext = new ExchangeMasterContext(XOPTIMAL_SIZE, getClassFromConfiguration(peer, Constants.ADF_FUNCTION1, XUpdate.class), getAllConfiguration(peer));
 		else
-			slaveContext = new ExchangeSlaveContext(XOPTIMAL_SIZE,getClassFromConfiguration(peer, Constants.ADF_FUNCTION2, XUpdate.class));
+			slaveContext = new ExchangeSlaveContext(XOPTIMAL_SIZE,getClassFromConfiguration(peer, Constants.ADF_FUNCTION2, XUpdate.class), getAllConfiguration(peer));
 		
 		//Count the total input
 		if(peer.getPeerName().equals(BSPBase.masterTask)) {

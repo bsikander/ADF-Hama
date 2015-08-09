@@ -1,6 +1,8 @@
 package main.com.techroz.adf.utils;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +48,7 @@ public class Utilities {
 	 * This static method rounds the double values to a specified decimal places
 	 */
 	public static double round(double value) {
-//		int places = Constants.ROUND_PLACES;
+//		int places = 5;// Constants.ROUND_PLACES;
 //	    if (places < 0) throw new IllegalArgumentException();
 //
 //	    BigDecimal bd = new BigDecimal(value);
