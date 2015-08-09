@@ -21,8 +21,10 @@ import ilog.opl.IloOplFactory;
 import ilog.opl.IloOplModel;
 import ilog.opl.IloOplModelDefinition;
 import ilog.opl.IloOplModelSource;
+import ilog.opl.IloOplSettings;
 import main.com.techroz.adf.admm.ContextBase;
 import main.com.techroz.adf.admm.XUpdate;
+import main.com.techroz.adf.utils.Utilities;
 import main.com.techroz.algorithm.exchange.ExchangeMasterContext;
 
 public class OPLSolverMaster implements XUpdate {
@@ -61,49 +63,31 @@ public class OPLSolverMaster implements XUpdate {
 		IloOplFactory.setDebugModeWarning(false); //TODO: set to false. When running in prod 
 		IloOplFactory oplF = new IloOplFactory();
 		IloOplErrorHandler errHandler = oplF.createOplErrorHandler();
+		IloOplSettings settings = oplF.createOplSettings(errHandler);
 		IloOplModelSource modelSource = oplF.createOplModelSource("/home/bsikander/Documents/OPLProject/EVADMM/EVADMM.mod");
 		//IloOplModelDefinition def = oplF.createOplModelDefinition(modelSource,settings);
-		IloOplModelDefinition def =oplF.createOplModelDefinition(modelSource, errHandler);
+		//IloOplModelDefinition def =oplF.createOplModelDefinition(modelSource, errHandler);
+		IloOplModelDefinition def = oplF.createOplModelDefinition(modelSource, settings);
 		IloCplex cplex = oplF.createCplex();
 		IloOplModel opl = oplF.createOplModel(def, cplex);
 		
-//		double[] nprice = { 0.0132,0.0132,    0.0132,    0.0132,    0.0120,    0.0120,    0.0120,    0.0120,    0.0116,    0.0116,    0.0116,    0.0116,    0.0114,    0.0114,    0.0114,    0.0114,    0.0109,    0.0109,    0.0109,    0.0109,    0.0105,    0.0105,    0.0105,    0.0105,    0.0108,    0.0108,    0.0108,    0.0108,    0.0118,    0.0118,    0.0118,    0.0118,    0.0128,    0.0128,    0.0128,    0.0128,    0.0143,    0.0143,    0.0143,    0.0143,    0.0145,    0.0145,    0.0145,    0.0145,    0.0149,    0.0149,    0.0149,    0.0149,    0.0150,    0.0150,    0.0150,    0.0150,    0.0133,    0.0133,    0.0133,    0.0133,    0.0127,    0.0127,    0.0127,    0.0127,    0.0127,    0.0127,    0.0127,    0.0127,    0.0138,    0.0138,    0.0138,    0.0138,    0.0178,    0.0178,    0.0178,    0.0178,    0.0187,    0.0187,    0.0187,    0.0187,    0.0171,    0.0171,    0.0171,    0.0171,    0.0140,    0.0140,    0.0140,    0.0140,    0.0127,    0.0127,    0.0127,    0.0127,    0.0132,    0.0132,    0.0132,    0.0132,    0.0128,    0.0128,    0.0128,    0.0128};
-//		double uk[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-//		double[] xMean = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-//		double[] xOld = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-//		double rho = 0.01;
 		MyParams datasource = new MyParams(oplF, 96, price, u, xMean, x, rho);
 		opl.addDataSource(datasource);
 		
 		opl.generate();
 		
 		double[] xOptimal = new double[u.length];
-//		
-//		//System.out.println("======= MASTER: OPTIMZATION ARRAY =====");
-//		for(int u1=0; u1 < u.length; u1++)
-//		{
-//			xOptimal[u1] = cplex.getValues(x_n)[u1];
-//		}
 		
 		if (cplex.solve()) {
 			opl.postProcess();
 			
 			IloNumMap x_n = opl.getElement("x_n").asNumMap();//.asNumSet();//.asSymbolSet();
-			
-			//System.out.println("%%%%%%%%%%% size: " +  x_n.getSize() + " %%%% " + x_n.get(1));
-			
+		
 			int count=0;
-			for(int i = 1; i < x_n.getSize(); i++) {
+			for(int i = 0; i < x_n.getSize(); i++) {
 				xOptimal[count] = x_n.get(i);
 				count ++;
 			}
-//			for (java.util.Iterator it2 = x_n.iterator(); it2.hasNext(); )
-//            {
-//                double p = (double)it2.next();
-//                xOptimal[count] = p;
-//                count++;
-//            }
-			
 			
 			opl.printSolution(System.out);
 			System.out.println("OBJECTIVE: " + opl.getCplex().getObjValue
@@ -139,9 +123,10 @@ public class OPLSolverMaster implements XUpdate {
 		
 		int index = 0;
 		for(String s: values) {
-			arr[index] = Double.parseDouble(s);
+			arr[index] = Utilities.round(Double.parseDouble(s));
 			index ++;
 		}
+		
 		return arr;
 	}
 	
@@ -188,7 +173,7 @@ class MyParams extends IloCustomOplDataSource
     private void setArray(double[] arr, String name, IloOplDataHandler handler) {
     	handler.startElement(name);
     	handler.startIndexedArray();
-    	for(int i =1; i < _timeSlot; i++) {
+    	for(int i =0; i < _timeSlot; i++) {
     		handler.setItemIntIndex(i);
     		handler.addNumItem(arr[i]);
     	}
