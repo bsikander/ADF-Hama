@@ -60,9 +60,12 @@ public class EVOptimizationFunction implements XUpdate{
 		OutputStream out = new FileOutputStream("logfile_slave");
 		cplex.setOut(out);
 
-		double[] x_old = ((ExchangeSlaveContext) context).getCurrentXOld();
-		double[] u = ((ExchangeSlaveContext) context).getU();
-		double[] xMean = ((ExchangeSlaveContext) context).getxMean();
+//		double[] x_old = ((ExchangeSlaveContext) context).getCurrentXOld();
+//		double[] u = ((ExchangeSlaveContext) context).getU();
+//		double[] xMean = ((ExchangeSlaveContext) context).getxMean();
+		double[] x_old = context.getXOptimal();
+		double[] u =  context.getU();
+		double[] xMean = context.getxMean();
 		double[] xOptimal = new double[x_old.length];
 		
 		//IloNumVar[] x_i = cplex.numVarArray(x.length, Double.MIN_VALUE, Double.MAX_VALUE);
@@ -138,48 +141,48 @@ public class EVOptimizationFunction implements XUpdate{
 	private void parse(String input) {
 		String[] splitData = input.split("\\|");
 		
-		xi_max = getArray(splitData[0]);
-		xi_min = getArray(splitData[1]);
-		A = getArray(splitData[2]);
+		xi_max = Utilities.getArray(splitData[0]);
+		xi_min = Utilities.getArray(splitData[1]);
+		A = Utilities.getArray(splitData[2]);
 		R = Double.parseDouble(splitData[3]);
 		gamma = Double.parseDouble(splitData[4]);
 		alpha = Double.parseDouble(splitData[5]);
 		rho = Double.parseDouble(splitData[6]);
-		S_max = getArray(splitData[7]);
-		S_min = getArray(splitData[8]);
-		B = getDoubleArray(splitData[9]);
+		S_max = Utilities.getArray(splitData[7]);
+		S_min = Utilities.getArray(splitData[8]);
+		B = Utilities.getDoubleArray(splitData[9]);
 	}
 	
-	private double[] getArray(String input) {
-		double[] arr;
-		//System.out.println("INPUT> :" + input);
-		input = input.substring(1,input.length() - 1); //remove [ ] symbols
-		String[] values = input.split(",");
-		arr = new double[values.length];
-		
-		int index = 0;
-		for(String s: values) {
-			arr[index] = Double.parseDouble(s);
-			index ++;
-		}
-		return arr;
-	}
+//	private double[] getArray(String input) {
+//		double[] arr;
+//		//System.out.println("INPUT> :" + input);
+//		input = input.substring(1,input.length() - 1); //remove [ ] symbols
+//		String[] values = input.split(",");
+//		arr = new double[values.length];
+//		
+//		int index = 0;
+//		for(String s: values) {
+//			arr[index] = Double.parseDouble(s);
+//			index ++;
+//		}
+//		return arr;
+//	}
 	
-	private double[][] getDoubleArray(String input) {
-		double[][] arr;
-		
-		String[] values = input.split("]");
-		
-		int index =0;
-		arr = new double[values.length][];
-		
-		for(String s: values) {
-			s += "]";
-			arr[index] = getArray(s);
-			index++;
-		}
-		return arr;
-	}
+//	private double[][] getDoubleArray(String input) {
+//		double[][] arr;
+//		
+//		String[] values = input.split("]");
+//		
+//		int index =0;
+//		arr = new double[values.length][];
+//		
+//		for(String s: values) {
+//			s += "]";
+//			arr[index] = getArray(s);
+//			index++;
+//		}
+//		return arr;
+//	}
 
 
 }

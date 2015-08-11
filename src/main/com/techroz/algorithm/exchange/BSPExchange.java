@@ -59,9 +59,9 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				peer.sync();
 				
 				double[] average = calculateAverageOfReceivedSlaveValues(peer);
-				LOG.info("--------- AVERAGE AT MASTER ---------" );
-				Utilities.PrintArray(average);
-				LOG.info("--------- AVERAGE AT MASTER ---------" );
+//				LOG.info("--------- AVERAGE AT MASTER ---------" );
+//				Utilities.PrintArray(average);
+//				LOG.info("--------- AVERAGE AT MASTER ---------" );
 				
 				masterContext.calculateXMean(average, TOTAL_INPUT + 1);
 				masterContext.calculateU();
@@ -119,7 +119,7 @@ public class BSPExchange extends BSPBase<LongWritable, Text, IntWritable, Text, 
 				while(peer.readNext(key, value) != false) {
 					slaveContext.getXUpdate(value.toString(),i);
 					
-					resultList.add(new Result(peer.getPeerName(),i,0, slaveContext.getCurrentXOld(), masterData.get("xMean"),masterData.get("u"),slaveContext.getXOptimal(),0));
+					resultList.add(new Result(peer.getPeerName(),i,0, slaveContext.getXOptimal(), masterData.get("xMean"),masterData.get("u"),slaveContext.getXOptimal(),0));
 					
 					sendDataToMaster(peer, BroadcastHelper.convertDictionaryToJson(slaveContext.getSlaveData()));  //Send x* to master
 					

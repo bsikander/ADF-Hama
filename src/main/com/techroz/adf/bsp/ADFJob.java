@@ -73,7 +73,7 @@ public class ADFJob {
 	public void setFunction1(Class<? extends XUpdate> cls, String modelFilePath, String dataHeaders) {
 		conf.setClass(Constants.ADF_FUNCTION1, cls, XUpdate.class);
 		job.set(Constants.ADF_FUNCTION1_MODEL_PATH, modelFilePath);
-		job.set(Constants.ADF_FUNCTION1_DATA_HEADER, dataHeaders);		
+		job.set(Constants.ADF_FUNCTION1_DATA_SCHEMA, dataHeaders);		
 	}
 	
 	public void setFunction2(Class<? extends XUpdate> cls) {
@@ -83,7 +83,7 @@ public class ADFJob {
 	public void setFunction2(Class<? extends XUpdate> cls, String modelFileName, String dataHeaders) {
 		conf.setClass(Constants.ADF_FUNCTION2, cls, XUpdate.class);
 		job.set(Constants.ADF_FUNCTION2_MODEL_PATH, modelFileName);
-		job.set(Constants.ADF_FUNCTION2_DATA_HEADER, dataHeaders);
+		job.set(Constants.ADF_FUNCTION2_DATA_SCHEMA, dataHeaders);
 	}
 	
 	public boolean run() throws ClassNotFoundException, IOException, InterruptedException {

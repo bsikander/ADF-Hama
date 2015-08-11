@@ -18,6 +18,6 @@ public class Constants {
 	public static final String ADF_FUNCTION2 = "adf.function2";
 	public static final String ADF_FUNCTION2_MODEL_PATH = "adf.function2.model.path";
 	public static final String ADF_ADMM_BSP_CLASS = "adf.admm.bsp.class";
-	public static final String ADF_FUNCTION1_DATA_HEADER = "adf.function1.data.header";
-	public static final String ADF_FUNCTION2_DATA_HEADER = "adf.function2.data.header";
+	public static final String ADF_FUNCTION1_DATA_SCHEMA = "adf.function1.data.header";
+	public static final String ADF_FUNCTION2_DATA_SCHEMA = "adf.function2.data.header";
 }

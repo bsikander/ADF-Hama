@@ -2,6 +2,8 @@ package main.com.techroz.adf.admm;
 
 import java.util.Map;
 
+import org.mortbay.log.Log;
+
 public abstract class ContextBase { //implements Context {// implements UUpdate, XUpdate {
 	
 	protected double[] xMean;
@@ -38,5 +40,12 @@ public abstract class ContextBase { //implements Context {// implements UUpdate,
 	
 	public double[] getXOptimal() {
 		return this.xOptimal;
+	}
+	
+	public  String getDataSchema() {
+		return "";
+	}
+	public  String getModelPath() {
+		return "";
 	}
 }

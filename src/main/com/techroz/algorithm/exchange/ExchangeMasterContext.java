@@ -5,6 +5,7 @@ import java.util.Map;
 
 import main.com.techroz.adf.admm.ContextBase;
 import main.com.techroz.adf.admm.XUpdate;
+import main.com.techroz.adf.utils.Constants;
 import main.com.techroz.adf.utils.Utilities;
 
 public class ExchangeMasterContext extends ContextBase {
@@ -22,7 +23,6 @@ public class ExchangeMasterContext extends ContextBase {
 	}
 	
 	public double[] getXUpdate(String input) {
-		//xOptimal = xUpdateFunction.getXUpdate(input, this, inputIndex);
 		xOptimal = xUpdateFunction.getXUpdate(input, this);
 		return xOptimal;
 	}
@@ -36,6 +36,20 @@ public class ExchangeMasterContext extends ContextBase {
 	public boolean converged() {
 		
 		return false;
+	}
+	
+	/*
+	 * This function will return the schema of data provided by the user 
+	 */
+	public String getDataSchema() {
+		return getConfiguration(Constants.ADF_FUNCTION1_DATA_SCHEMA);
+	}
+	
+	/*
+	 * This function will provide the path of model submitted by user
+	 */
+	public String getModelPath() {
+		return getConfiguration(Constants.ADF_FUNCTION1_MODEL_PATH);
 	}
 	
 	public Map<String, double[]> getMasterData() {

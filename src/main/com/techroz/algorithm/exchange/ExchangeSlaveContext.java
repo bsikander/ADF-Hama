@@ -3,8 +3,11 @@ package main.com.techroz.algorithm.exchange;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mortbay.log.Log;
+
 import main.com.techroz.adf.admm.ContextBase;
 import main.com.techroz.adf.admm.XUpdate;
+import main.com.techroz.adf.utils.Constants;
 
 public class ExchangeSlaveContext extends ContextBase {
 	private double[][] wholeX;
@@ -28,11 +31,20 @@ public class ExchangeSlaveContext extends ContextBase {
 		return xOptimal;
 	}
 	
-	//public double[] getXOld(int index) {
-	public double[] getCurrentXOld() {
-		//return this.wholeX[index];
+	/*
+	 * (non-Javadoc)
+	 * @see main.com.techroz.adf.admm.ContextBase#getXOptimal()
+	 * This property overrides the base property. Since this class manages the current index of input and context
+	 * It returns whatever the xOptimal value is of current EV.
+	 */
+	public double[] getXOptimal() {
 		return this.wholeX[currentInputIndex];
 	}
+	
+	
+//	public double[] getCurrentXOld() {
+//		return this.wholeX[currentInputIndex];
+//	}
 	
 	public Map<String, double[]> getSlaveData() {
 		Map<String, double[]> data = new HashMap<String,double[]>();
@@ -44,6 +56,20 @@ public class ExchangeSlaveContext extends ContextBase {
 	public void setMasterData(Map<String, double[]> data) {
 		this.xMean = data.get("xMean");
 		this.u = data.get("u");
+	}
+	
+	/*
+	 * This function will return the schema of data provided by the user 
+	 */
+	public String getDataSchema() {
+		return getConfiguration(Constants.ADF_FUNCTION2_DATA_SCHEMA);
+	}
+	
+	/*
+	 * This function will provide the path of model submitted by user
+	 */
+	public String getModelPath() {
+		return getConfiguration(Constants.ADF_FUNCTION2_MODEL_PATH);
 	}
 	
 }

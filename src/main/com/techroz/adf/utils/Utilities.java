@@ -102,4 +102,50 @@ public class Utilities {
 		Map<String, double[]> data = new HashMap<String, double[]>();
 		return BroadcastHelper.convertDictionaryToJson(data);
 	}
+	
+	public static double[][] getDoubleArray(String input) {
+		double[][] arr;
+		
+		String[] values = input.split("]");
+		
+		int index =0;
+		arr = new double[values.length][];
+		
+		for(String s: values) {
+			s += "]";
+			arr[index] = getArray(s);
+			index++;
+		}
+		return arr;
+	}
+	
+	public static double[] getArray(String input) {
+		double[] arr;
+		//System.out.println("INPUT> :" + input);
+		input = input.substring(1,input.length() - 1); //remove [ ] symbols
+		String[] values = input.split(",");
+		arr = new double[values.length];
+		
+		int index = 0;
+		for(String s: values) {
+			arr[index] = Double.parseDouble(s);
+			index ++;
+		}
+		return arr;
+	}
+	
+	/*
+	 * If the input contains multiple [][] then the input is a double array
+	 */
+	public static boolean checkDoubleArrayOccurrenceInInput(String input) {
+		int lengthWithBrackets = input.length();
+		int lengthWithoutBrackets = input.replace("'", "").length();
+
+		if(lengthWithBrackets - lengthWithoutBrackets > 2) {
+		    return true;
+		}
+		return false;
+	}
+
+	
 }
