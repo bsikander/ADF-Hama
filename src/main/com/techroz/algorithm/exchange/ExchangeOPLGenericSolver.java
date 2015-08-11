@@ -2,6 +2,7 @@ package main.com.techroz.algorithm.exchange;
 
 import java.io.FileNotFoundException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -112,7 +113,8 @@ public class ExchangeOPLGenericSolver implements XUpdate {
 	private Map<String,ParsedData> parse(String input, String schema) {
 		String[] splitData = input.split("\\|");
 		String[] splitSchema = schema.split(",");
-		Map<String,ParsedData> data = new HashMap<String, ParsedData>();
+		//Map<String,ParsedData> data = new HashMap<String, ParsedData>();
+		Map<String,ParsedData> data = new LinkedHashMap<String, ParsedData>();
 		//price,re,D,xa_min,xa_max
 		
 		int index = 0; 
@@ -149,19 +151,24 @@ class ExchangeDataSource extends IloCustomOplDataSource {
 	public void customRead() {
 		IloOplDataHandler handler = getDataHandler();
 		
+//		handler.startElement("timeSlot");
+//		handler.addIntItem(96);
+//		handler.endElement();
+		
 		for (Entry<String, ParsedData> entry : data.entrySet()) {
+			//if(entry.getKey().equals("timeSlot")) continue;
 			handler.startElement(entry.getKey());
 			
-			if(entry.getValue().type == "int") {
+			if(entry.getValue().type.equals("int")) {
 				handler.addIntItem((int) entry.getValue().data);
 			}
-			else if(entry.getValue().type == "double") {
+			else if(entry.getValue().type.equals("double")) {
 				handler.addNumItem((double) entry.getValue().data);
 			}
-			else if(entry.getValue().type == "array") {
+			else if(entry.getValue().type.equals("array")) {
 				setArray((double[]) entry.getValue().data, handler);
 			}
-			else if(entry.getValue().type == "doubleArray") {
+			else if(entry.getValue().type.equals("doubleArray")) {
 				//TODO: Add function here
 			}
 			
