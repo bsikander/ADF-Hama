@@ -139,7 +139,7 @@ public class Utilities {
 	 */
 	public static boolean checkDoubleArrayOccurrenceInInput(String input) {
 		int lengthWithBrackets = input.length();
-		int lengthWithoutBrackets = input.replace("'", "").length();
+		int lengthWithoutBrackets = input.replace("[", "").length();
 
 		if(lengthWithBrackets - lengthWithoutBrackets > 2) {
 		    return true;
