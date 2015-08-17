@@ -21,8 +21,6 @@ public final class PriceBasedOptimizationFunction implements XUpdate {
 	public static final Log LOG = LogFactory.getLog(PriceBasedOptimizationFunction.class);
 	
 	private double[] price;
-//	private double[] xa_min;
-//	private double[] xa_max;
 	private Double rho;
 	
 	
@@ -51,9 +49,6 @@ public final class PriceBasedOptimizationFunction implements XUpdate {
 		OutputStream out = new FileOutputStream("logfile_master");
 		cplex.setOut(out);
 
-//		double[] x = ((ExchangeMasterContext) context).getXOptimal();
-//		double[] u = ((ExchangeMasterContext) context).getU();
-//		double[] xMean = ((ExchangeMasterContext) context).getxMean();
 		double[] x = context.getXOptimal();
 		double[] u = context.getU();
 		double[] xMean = context.getxMean();
@@ -100,26 +95,8 @@ public final class PriceBasedOptimizationFunction implements XUpdate {
 		String[] splitData = input.split("\\|");
 		
 		price = Utilities.getArray(splitData[1]);
-//		xa_min = Utilities.getArray(splitData[3]);
-//		xa_max = Utilities.getArray(splitData[4]);
 		rho = Double.parseDouble(splitData[2]);
 	}
-	
-//	private double[] getArray(String input) {
-//		double[] arr;
-//		
-//		input = input.substring(1,input.length() - 1); //remove [ ] symbols
-//		String[] values = input.split(",");
-//		arr = new double[values.length];
-//		
-//		int index = 0;
-//		for(String s: values) {
-//			arr[index] = Double.parseDouble(s);
-//			index ++;
-//		}
-//		return arr;
-//	}
-	
 	
 	private double[] subtractOldMeanU(double[] xold, double[] xMean, double[] u)
 	{	

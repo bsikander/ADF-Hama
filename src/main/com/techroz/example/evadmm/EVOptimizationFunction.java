@@ -32,14 +32,11 @@ public final class EVOptimizationFunction implements XUpdate{
 	double[][] B;
 	
 	@Override
-	//public double[] getXUpdate(String input,ContextBase context, int inputIndex) {
 	public double[] getXUpdate(String input,ContextBase context) {
 		LOG.info("CPLEXEVSlaveFunction here");
 		parse(input);
 		
 		try {
-			
-			//return	optimize(context, inputIndex);
 			return	optimize(context);
 			
 		} catch (FileNotFoundException e) {
@@ -53,22 +50,17 @@ public final class EVOptimizationFunction implements XUpdate{
 		return null;
 	}
 	
-	//public double[] optimize(ContextBase context, int inputIndex) throws IloException, FileNotFoundException
 	public double[] optimize(ContextBase context) throws IloException, FileNotFoundException
 	{
 		IloCplex cplex = new IloCplex();
 		OutputStream out = new FileOutputStream("logfile_slave");
 		cplex.setOut(out);
 
-//		double[] x_old = ((ExchangeSlaveContext) context).getCurrentXOld();
-//		double[] u = ((ExchangeSlaveContext) context).getU();
-//		double[] xMean = ((ExchangeSlaveContext) context).getxMean();
 		double[] x_old = context.getXOptimal();
 		double[] u =  context.getU();
 		double[] xMean = context.getxMean();
 		double[] xOptimal = new double[x_old.length];
 		
-		//IloNumVar[] x_i = cplex.numVarArray(x.length, Double.MIN_VALUE, Double.MAX_VALUE);
 		IloNumVar[] x_i = new IloNumVar[x_old.length];
 		
 		for(int i = 0; i < x_old.length ; i++) {
@@ -82,7 +74,6 @@ public final class EVOptimizationFunction implements XUpdate{
 		
 		for(int i =0; i< data.length; i++)
 		{	
-			//exps[i] = cplex.sum(cplex.prod(gammaAlpha, cplex.square(x_i[i])) ,cplex.prod(rho/2, cplex.square(cplex.sum(x_i[i], cplex.constant(-data[i])))));
 			exps[i] = cplex.sum(cplex.prod(gammaAlpha, cplex.square(x_i[i])) ,cplex.prod(rho/2, cplex.square(cplex.sum(x_i[i], cplex.constant(data[i])))));
 		}
 		
@@ -152,37 +143,4 @@ public final class EVOptimizationFunction implements XUpdate{
 		S_min = Utilities.getArray(splitData[9]);
 		B = Utilities.getDoubleArray(splitData[10]);
 	}
-	
-//	private double[] getArray(String input) {
-//		double[] arr;
-//		//System.out.println("INPUT> :" + input);
-//		input = input.substring(1,input.length() - 1); //remove [ ] symbols
-//		String[] values = input.split(",");
-//		arr = new double[values.length];
-//		
-//		int index = 0;
-//		for(String s: values) {
-//			arr[index] = Double.parseDouble(s);
-//			index ++;
-//		}
-//		return arr;
-//	}
-	
-//	private double[][] getDoubleArray(String input) {
-//		double[][] arr;
-//		
-//		String[] values = input.split("]");
-//		
-//		int index =0;
-//		arr = new double[values.length][];
-//		
-//		for(String s: values) {
-//			s += "]";
-//			arr[index] = getArray(s);
-//			index++;
-//		}
-//		return arr;
-//	}
-
-
 }
