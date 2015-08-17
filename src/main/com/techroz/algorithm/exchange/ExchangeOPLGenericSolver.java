@@ -119,11 +119,12 @@ public class ExchangeOPLGenericSolver implements XUpdate {
 		
 		int index = 0; 
 		for(String s : splitData) {
-			if(s.contains("[")) { //s is an array
-				data.put(splitSchema[index], new ParsedData("array", Utilities.getArray(s)));
-			}
-			else if(Utilities.checkDoubleArrayOccurrenceInInput(s)) { //s is a double array
+			if(Utilities.checkDoubleArrayOccurrenceInInput(s)) { //s is a double array
 				data.put(splitSchema[index], new ParsedData("doubleArray", Utilities.getDoubleArray(s)));
+			}
+			else if(s.contains("[")) { //s is an array
+				LOG.info("Schema: " + splitSchema[index]);
+				data.put(splitSchema[index], new ParsedData("array", Utilities.getArray(s)));
 			}
 			else if(s.contains(".")) { //data is double
 				data.put(splitSchema[index], new ParsedData("double", Double.parseDouble(s)));
@@ -169,7 +170,7 @@ class ExchangeDataSource extends IloCustomOplDataSource {
 				setArray((double[]) entry.getValue().data, handler);
 			}
 			else if(entry.getValue().type.equals("doubleArray")) {
-				//TODO: Add function here
+				setDoubleArray((double[][])entry.getValue().data, handler);
 			}
 			
 			handler.endElement();
@@ -183,6 +184,24 @@ class ExchangeDataSource extends IloCustomOplDataSource {
     		handler.addNumItem(arr[i]);
     	}
     	handler.endIndexedArray();
+    }
+	
+    private void setDoubleArray(double[][] arr, IloOplDataHandler handler) {
+    	//handler.startElement(name);
+    	handler.startIndexedArray();
+    	
+    	for(int i = 0; i < arr.length; i++) {
+    		handler.setItemIntIndex(i);
+    		handler.startIndexedArray();
+    		for(int j = 0 ; j < arr[i].length; j++) {
+    			handler.setItemIntIndex(j);
+        		handler.addNumItem(arr[i][j]);
+    		}
+    		handler.endIndexedArray();
+    	}
+    	handler.endIndexedArray();
+    	handler.endElement();
+    	
     }
 	
 }

@@ -17,7 +17,7 @@ import main.com.techroz.adf.admm.XUpdate;
 import main.com.techroz.adf.utils.Utilities;
 import main.com.techroz.algorithm.exchange.ExchangeSlaveContext;
 
-public class EVOptimizationFunction implements XUpdate{
+public final class EVOptimizationFunction implements XUpdate{
 	public static final Log LOG = LogFactory.getLog(EVOptimizationFunction.class);
 
 	double[] xi_min;
@@ -141,16 +141,16 @@ public class EVOptimizationFunction implements XUpdate{
 	private void parse(String input) {
 		String[] splitData = input.split("\\|");
 		
-		xi_max = Utilities.getArray(splitData[0]);
-		xi_min = Utilities.getArray(splitData[1]);
-		A = Utilities.getArray(splitData[2]);
-		R = Double.parseDouble(splitData[3]);
-		gamma = Double.parseDouble(splitData[4]);
-		alpha = Double.parseDouble(splitData[5]);
-		rho = Double.parseDouble(splitData[6]);
-		S_max = Utilities.getArray(splitData[7]);
-		S_min = Utilities.getArray(splitData[8]);
-		B = Utilities.getDoubleArray(splitData[9]);
+		xi_max = Utilities.getArray(splitData[1]);
+		xi_min = Utilities.getArray(splitData[2]);
+		A = Utilities.getArray(splitData[3]);
+		R = Double.parseDouble(splitData[4]);
+		gamma = Double.parseDouble(splitData[5]);
+		alpha = Double.parseDouble(splitData[6]);
+		rho = Double.parseDouble(splitData[7]);
+		S_max = Utilities.getArray(splitData[8]);
+		S_min = Utilities.getArray(splitData[9]);
+		B = Utilities.getDoubleArray(splitData[10]);
 	}
 	
 //	private double[] getArray(String input) {

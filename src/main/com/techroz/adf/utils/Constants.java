@@ -1,6 +1,6 @@
 package main.com.techroz.adf.utils;
 
-public class Constants {
+public final class Constants {
 	public static final String ADF_CONFIGURATION_REGEX = "adf.*";
 	public static final Integer ADF_DECIMAL_PLACES = 4;
 	public static final String ADF_MAX_ITERATIONS = "adf.iterations";

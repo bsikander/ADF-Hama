@@ -17,7 +17,7 @@ import main.com.techroz.adf.admm.XUpdate;
 import main.com.techroz.adf.utils.Utilities;
 import main.com.techroz.algorithm.exchange.ExchangeMasterContext;
 
-public class PriceBasedOptimizationFunction implements XUpdate {
+public final class PriceBasedOptimizationFunction implements XUpdate {
 	public static final Log LOG = LogFactory.getLog(PriceBasedOptimizationFunction.class);
 	
 	private double[] price;

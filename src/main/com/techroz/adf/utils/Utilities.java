@@ -11,7 +11,7 @@ import org.apache.commons.logging.LogFactory;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 
-public class Utilities {
+public final class Utilities {
 	public static final Log LOG = LogFactory.getLog(Utilities.class);
 	/**
 	 * This method takes size as input and returns an array of zeros
@@ -139,7 +139,7 @@ public class Utilities {
 	 */
 	public static boolean checkDoubleArrayOccurrenceInInput(String input) {
 		int lengthWithBrackets = input.length();
-		int lengthWithoutBrackets = input.replace("'", "").length();
+		int lengthWithoutBrackets = input.replace("[", "").length();
 
 		if(lengthWithBrackets - lengthWithoutBrackets > 2) {
 		    return true;

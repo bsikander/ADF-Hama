@@ -8,7 +8,7 @@ import main.com.techroz.adf.admm.XUpdate;
 import main.com.techroz.adf.utils.Constants;
 import main.com.techroz.adf.utils.Utilities;
 
-public class ExchangeMasterContext extends ContextBase {
+public final class ExchangeMasterContext extends ContextBase {
 	XUpdate xUpdateFunction;
 	
 	public ExchangeMasterContext(int size, XUpdate masterFunction, Map<String, String> configurationProperties) {

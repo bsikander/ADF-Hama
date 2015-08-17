@@ -9,7 +9,7 @@ import main.com.techroz.adf.admm.ContextBase;
 import main.com.techroz.adf.admm.XUpdate;
 import main.com.techroz.adf.utils.Constants;
 
-public class ExchangeSlaveContext extends ContextBase {
+public final class ExchangeSlaveContext extends ContextBase {
 	private double[][] wholeX;
 	XUpdate xUpdateFunction;
 	private int currentInputIndex;
