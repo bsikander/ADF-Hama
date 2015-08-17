@@ -21,8 +21,8 @@ public final class PriceBasedOptimizationFunction implements XUpdate {
 	public static final Log LOG = LogFactory.getLog(PriceBasedOptimizationFunction.class);
 	
 	private double[] price;
-	private double[] xa_min;
-	private double[] xa_max;
+//	private double[] xa_min;
+//	private double[] xa_max;
 	private Double rho;
 	
 	
@@ -99,10 +99,10 @@ public final class PriceBasedOptimizationFunction implements XUpdate {
 	private void parse(String input) {
 		String[] splitData = input.split("\\|");
 		
-		price = Utilities.getArray(splitData[0]);
-		xa_min = Utilities.getArray(splitData[3]);
-		xa_max = Utilities.getArray(splitData[4]);
-		rho = Double.parseDouble(splitData[5]);
+		price = Utilities.getArray(splitData[1]);
+//		xa_min = Utilities.getArray(splitData[3]);
+//		xa_max = Utilities.getArray(splitData[4]);
+		rho = Double.parseDouble(splitData[2]);
 	}
 	
 //	private double[] getArray(String input) {
